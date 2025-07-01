@@ -2,73 +2,70 @@ import cv2
 import numpy as np
 from numpy import random as rd
 import matplotlib.pyplot as plt
-img = cv2.imread('PI-Nellyrodi/image/IMG_4697.png')
-
-hauteur, largeurs, couleurs = img.shape
-
-def distance (x,y):
-  
-    '''distance euclidienne entre x et y'''
-    return ((x[0]-y[0])**2 + (x[1]-y[1])**2 + (x[2]-y[2])**2)**0.5
+from sklearn.cluster import KMeans
+img = cv2.imread('data_hsv/impressionist_paintings/0.jpg', cv2.IMREAD_COLOR)
 
 
+def hsv_distance(p1, p2):  # p1 et p2 sont des triplets de la forme [h,s,v]
+    r1 = (p1[1] / 255) * (p1[2] / 255)
+    theta1 = (p1[0] / 180) * 2 * np.pi
+    z1 = p1[2] / 255 - 1
+    x1 = r1 * np.cos(theta1)
+    y1 = r1 * np.sin(theta1)
+    r2 = (p2[1] / 255) * (p2[2] / 255)
+    theta2 = (p2[0] / 180) * 2 * np.pi
+    z2 = p2[2] / 255 - 1
+    x2 = r2 * np.cos(theta2)
+    y2 = r2 * np.sin(theta2)
 
-def trouver_centre (L):
-    centre = L[0]
-    s = 0
-    for y in L:
-        s += distance(centre,y)
-    m=s
-    for index,x in enumerate(L):
-        s = 0
-        for y in L:
-            s += distance(x,y)
-        if s < m:
-            m = s
-            centre = x
-    return centre
+    return (x1 - x2) ** 2 + (y1 - y2) ** 2 + (z1 - z2) ** 2
 
-def trouver_barycentre (L):
-    '''trouve le barycentre de la liste L'''
-    s = [0,0,0]
-    for x in L:
-        s[0] += x[0]
-        s[1] += x[1]
-        s[2] += x[2]
-    return [s[0]/len(L),s[1]/len(L),s[2]/len(L)]
+def moyenne(cluster):
+    """Calcul le centre (couleur moyenne) d'un cluster."""
+    if not cluster:
+        return np.array([0, 0, 0])
+    return np.mean(cluster, axis=0)
 
-def clusters (Im,L,C,N):
-    '''L la liste des foyers, M matrice des clusters, Im le tableau de l'image, C affichage des clusters,itérations'''
-    for k in range(N):
-        M = [[Im[0,0]] for i in range(len(L))]
-        for j in range (hauteur):
-            print('changement hauteur')
-            for index,x in enumerate(Im[j]) :
-                d = distance(x,L[0])
-                for i in range(1,len(L)):
-                    d2 = distance(x,L[i])
-                    
-                    if d2 < d:
-                        d = d2
-                        c = i
-                M[c].append(x)
-            
-        for i in range(len(L)):
-            print('recherche barycentre')
-            L[i] = trouver_barycentre(M[i])
-            C[j][index] = L[i]   
-    return(L,M,C)
+class KMeans:
+    def __init__(self, n_clusters, max_iter=10):
+        self.n_clusters = n_clusters
+        self.max_iter = max_iter
 
-L = [img[rd.randint(0,hauteur)][rd.randint(0,largeurs)] for i in range(5)]
-L,M,C = clusters(img,L,[[[0,0,0] for i in range (largeurs)] for k in range (hauteur)],10)
+    def fit(self, X_train):
+        # Initialize centroids
+        min_, max_ = np.min(X_train, axis=0), np.max(X_train, axis=0)
+        self.centroids = [np.random.uniform(min_, max_) for _ in range(self.n_clusters)]
 
-plt.imshow(C)
-plt.show()
+        # Iterate until convergence or max iterations
+        iteration = 0
+        prev_centroids = None
+        while iteration < self.max_iter and np.not_equal(self.centroids, prev_centroids).any() :
+            # Assign points to nearest centroid
+            sorted_points = [[] for _ in range(self.n_clusters)]
+            for x in X_train:
+                dists = []
+                # Calculate distances to each centroid
+                for center in self.centroids:
+                    dists.append(hsv_distance(x, center))
+                centroid_idx = np.argmin(dists)
+                sorted_points[centroid_idx].append(x)
 
+            # Update centroids
+            prev_centroids = self.centroids
+            self.centroids = np.array([moyenne(cluster) for cluster in sorted_points]) 
+            print(f"Iteration {iteration + 1}")         
+            iteration += 1
+        print(f"Convergence après {iteration} iterations.")
+        dico = {}
+        for i, cluster in enumerate(sorted_points):
+            dico[i] = [self.centroids[i], len(cluster)]
+        print("Dictionnaire des clusters:", dico)
+        return dico
 
+#idealement renvoie d[couleur] = population
 
-        
-        
+#print(img.reshape(-1, 3).shape)  # Reshape the image to a 2D array of pixels
+kmeans = KMeans(n_clusters=4).fit(img.reshape(-1, 3))
 
 
 
