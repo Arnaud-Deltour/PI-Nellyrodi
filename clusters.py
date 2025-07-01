@@ -3,7 +3,9 @@ import numpy as np
 from numpy import random as rd
 import matplotlib.pyplot as plt
 from sklearn.cluster import KMeans
-img = cv2.imread('PI-Nellyrodi/data_hsv/impressionist_paintings/4.jpg', cv2.IMREAD_COLOR)
+#img = cv2.imread('PI-Nellyrodi/data_hsv/impressionist_paintings/2019.jpg', cv2.IMREAD_COLOR)
+img = cv2.imread('data_hsv/impressionist_paintings/0.jpg', cv2.IMREAD_COLOR)
+#img = cv2.imread('image/img.jpg', cv2.IMREAD_COLOR)
 
 def foyer(n,M):
     '''Le but est de génerer n foyers le premier choisi au hasard, le deuxième chosi de sorte que la distance soit la plus loin du premier et itération suivante la plus loin des précédents, n nombre de foyers, M matrice des points'''
@@ -25,14 +27,14 @@ def foyer(n,M):
     return np.array(foyers)
 
 def hsv_distance(p1, p2):  # p1 et p2 sont des triplets de la forme [h,s,v]
-    r1 = (p1[1] / 255) * (p1[2] / 255) * 3
+    r1 = (p1[1] / 255) * (p1[2] / 255)
     theta1 = (p1[0] / 180) * 2 * np.pi
-    z1 = p1[2] / 255 - 1
+    z1 = (p1[2] / 255 - 1)
     x1 = r1 * np.cos(theta1)
     y1 = r1 * np.sin(theta1)
-    r2 = (p2[1] / 255) * (p2[2] / 255) * 3
+    r2 = (p2[1] / 255) * (p2[2] / 255)
     theta2 = (p2[0] / 180) * 2 * np.pi
-    z2 = p2[2] / 255 - 1
+    z2 = (p2[2] / 255 - 1)
     x2 = r2 * np.cos(theta2)
     y2 = r2 * np.sin(theta2)
 
@@ -61,11 +63,11 @@ def initialize(data, n):
     return np.array(centroids)
 
 class KMeans:
-    def __init__(self, n_clusters, max_iter=10):
+    def __init__(self, n_clusters, max_iter=5):
         self.n_clusters = n_clusters
         self.max_iter = max_iter
 
-    def fit(self, X_train, seuil=10):
+    def fit(self, X_train, seuil=0.5):
         # Array containing the modified image
         modified_img = np.array(X_train, dtype=np.float32)
 
@@ -87,23 +89,22 @@ class KMeans:
                 argmin = np.argmin(dists)
                 centroid_idx = argmin
 
-                # If the distance is below the threshold, assign the point to the cluster
-                if dists[argmin] < seuil :
-                    sorted_points[centroid_idx].append(x)
-                    # Store the index of the point in the corresponding cluster to rebuild the image later
-                    sorted_points_coord[centroid_idx].append(i)
-
-                # If the distance is above the threshold, assign white
-                else :
-                    sorted_points[centroid_idx].append([179, 255, 255])
-                    # Store the index of the point in the corresponding cluster to rebuild the image later
-                    sorted_points_coord[centroid_idx].append(i)
+                sorted_points[centroid_idx].append(x)
+                # Store the index of the point in the corresponding cluster to rebuild the image later
+                sorted_points_coord[centroid_idx].append(i)
 
             # Update centroids
             prev_centroids = self.centroids
             self.centroids = np.array([moyenne(cluster) for cluster in sorted_points])          
             iteration += 1
             print(f"Iteration {iteration + 1}")
+ 
+        # Try to find a way to select 4 clusters with different colors
+
+        # Select the most represented cluster for first one
+
+        # Then select the clusters with the centroids that are the most distant from the first one
+
 
         # Rebuild the image
         for i, cluster in enumerate(sorted_points):
@@ -125,7 +126,7 @@ class KMeans:
 #idealement renvoie d[couleur] = population
 
 #print(img.reshape(-1, 3).shape)  # Reshape the image to a 2D array of pixels
-kmeans = KMeans(n_clusters=6).fit(img.reshape(-1, 3))
+kmeans = KMeans(n_clusters=8).fit(img.reshape(-1, 3))
 
 #convert the clusters from HSV to RGB
 for i, (centroid, population) in kmeans.items():
