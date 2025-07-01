@@ -15,7 +15,7 @@ y = df[
      'col4_h', 'col4_s', 'col4_v']
 ].values.astype(np.float32)
 
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.01, random_state=1)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.01, random_state=10)
 
 
 
@@ -25,7 +25,7 @@ model = Sequential([
     Dense(9, activation='sigmoid')  # 3 HSV vectors = 9 values
 ])
 
-model.compile(optimizer='adam', loss='mse')
+model.compile(optimizer='adam', loss='mse', metrics=['accuracy'])
 
 model.fit(X_train, y_train, epochs=100, verbose=1)
 predictions = model.predict(X_test)
@@ -56,3 +56,5 @@ def show_input_and_palettes(inputs, predictions):
     plt.show()
 
 show_input_and_palettes(X_test, predictions)
+
+print(model.evaluate(X_test, y_test))
