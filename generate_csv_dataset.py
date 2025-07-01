@@ -13,8 +13,8 @@ def generate_dataset(num_samples=1000):
         # Color 1: slightly brighter
         # Color 2: slightly darker
         # Color 3: shifted hue or blended
-        color1 = np.clip(base_color + np.random.uniform(0.05, 0.2, 3), 0, 1)
-        color2 = np.clip(base_color - np.random.uniform(0.05, 0.2, 3), 0, 1)
+        color1 = np.clip(base_color + np.array([0,0,np.random.uniform(0.05, 0.2)]), 0, 1)
+        color2 = np.clip(base_color - np.array([0,0,np.random.uniform(0.05, 0.2)]), 0, 1)
         color3 = np.clip((base_color + np.roll(base_color, 1)) / 2, 0, 1)
 
         # Store input and flattened target (9 values: 3 RGB vectors)
