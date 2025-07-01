@@ -18,7 +18,6 @@ y = df[
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.01, random_state=10)
 
 
-
 model = Sequential([
     Dense(32, input_dim=3, activation='relu'),
     Dense(64, activation='relu'),
@@ -58,3 +57,5 @@ def show_input_and_palettes(inputs, predictions):
 show_input_and_palettes(X_test, predictions)
 
 print(model.evaluate(X_test, y_test))
+
+model.save('impressionist_paintings.keras')
