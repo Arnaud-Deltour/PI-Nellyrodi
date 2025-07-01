@@ -30,10 +30,10 @@ data = np.hstack([X, y])
 
 # Define column names
 columns = [
-    'input_r', 'input_g', 'input_b',
-    'out1_r', 'out1_g', 'out1_b',
-    'out2_r', 'out2_g', 'out2_b',
-    'out3_r', 'out3_g', 'out3_b'
+    'col1_h', 'col1_s', 'col1_v',
+    'col2_h', 'col2_s', 'col2_v',
+    'col3_h', 'col3_s', 'col3_v',
+    'col4_h', 'col4_s', 'col4_v'
 ]
 
 # Create and save DataFrame
