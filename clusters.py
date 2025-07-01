@@ -19,8 +19,7 @@ def hsv_distance(p1, p2):  # p1 et p2 sont des triplets de la forme [h,s,v]
     x2 = r2 * np.cos(theta2)
     y2 = r2 * np.sin(theta2)
 
-    return ((x1 - x2) ** 2 + (y1 - y2) ** 2 + (z1 - z2) ** 2)**0.5
-    return ((x1 - x2) ** 2 + (y1 - y2) ** 2 + (z1 - z2) ** 2)**0.5
+    return np.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2 + (z1 - z2) ** 2)
 
 def moyenne(cluster):
     """Calcul le centre (couleur moyenne) d'un cluster."""
