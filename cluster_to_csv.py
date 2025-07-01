@@ -1,6 +1,5 @@
 from clusters import KMeans
 import cv2
-import glob
 import csv
 import os
 
@@ -26,5 +25,5 @@ image_list = [cv2.imread(os.path.join(dataset_hsv_dir, file)) for file in os.lis
 
 
 for image in image_list :
-    dico = KMeans(n_clusters=5).fit(image.reshape(-1,3))
-    add_to_csv('data.csv',dico)
+    dico = KMeans(n_clusters=4, max_iter=5).fit(image.reshape(-1,3))
+    add_to_csv('data2.csv',dico)

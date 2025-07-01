@@ -1,25 +1,27 @@
 import cv2
 import os
 
-# Chemin vers dossier images
-#dataset_dir = 'PI-Nellyrodi\data\impressionist_paintings'
-#dataset_hsv_dir = 'PI-Nellyrodi\data_hsv\impressionist_paintings'
-dataset_dir = 'data\impressionist_paintings'
-dataset_hsv_dir = 'data_hsv\impressionist_paintings'
+dataset_dir = 'compressed_images_png'
+dataset_hsv_dir = 'compressed_images_hsv'
+
+# Créer dossier de sortie s'il n'existe pas
+os.makedirs(dataset_hsv_dir, exist_ok=True)
 
 # Liste des images dans le dossier
-image_list = [os.path.join(dataset_dir, file) for file in os.listdir(dataset_dir) if file.endswith(('.jpg','.JPG'))]
+image_list = [os.path.join(dataset_dir, file) for file in os.listdir(dataset_dir) if file.lower().endswith('.png')]
 
 i = 0
-for image in image_list:
-    img = cv2.imread(image)
+for image_path in image_list:
+    img = cv2.imread(image_path)
 
-    # Convert to HSV
+    # Convertir en HSV
     hsv_img = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
-    name = image[29:]
 
-    cv2.imwrite(os.path.join(dataset_hsv_dir,name), hsv_img)
-    #print(i)
-    i+= 1
+    # Extraire nom de fichier proprement
+    name = os.path.basename(image_path)
 
-print("Conversion terminée")
+    # Sauvegarder l'image HSV
+    cv2.imwrite(os.path.join(dataset_hsv_dir, name), hsv_img)
+    i += 1
+
+print(f"Conversion terminée pour {i} images")

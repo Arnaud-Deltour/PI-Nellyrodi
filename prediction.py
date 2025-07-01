@@ -7,13 +7,36 @@ import pandas as pd
 import cv2
 
 # Load CSV
-df = pd.read_csv("generated_color_palette_dataset.csv")
-X = df[['col1_h', 'col1_s', 'col1_v']].values.astype(np.float32)
-y = df[
-    ['col2_h', 'col2_s', 'col2_v',
+#df = pd.read_csv("generated_color_palette_dataset.csv")
+df = pd.read_csv("data2.csv")
+print(df)
+X1 = df.drop(columns=['col2_h', 'col2_s', 'col2_v',
      'col3_h', 'col3_s', 'col3_v',
-     'col4_h', 'col4_s', 'col4_v']
-].values.astype(np.float32)
+     'col4_h', 'col4_s', 'col4_v'])
+X1.columns =["1","2","3"]
+y1 = df.drop(columns=['col1_h', 'col1_s', 'col1_v'])
+y1.columns = ["1","2","3","4","5","6","7","8","9"]
+X2 = df.drop(columns=['col3_h', 'col3_s', 'col3_v',
+     'col4_h', 'col4_s', 'col4_v',
+     'col1_h', 'col1_s', 'col1_v'])
+X2.columns =["1","2","3"]
+y2 = df.drop(columns=['col2_h', 'col2_s', 'col2_v'])
+y2.columns = ["1","2","3","4","5","6","7","8","9"]
+X3 = df.drop(columns=['col2_h', 'col2_s', 'col2_v',
+     'col4_h', 'col4_s', 'col4_v',
+     'col1_h', 'col1_s', 'col1_v'])
+X3.columns =["1","2","3"]
+y3 = df.drop(columns=['col3_h', 'col3_s', 'col3_v'])
+y3.columns = ["1","2","3","4","5","6","7","8","9"]
+X4 = df.drop(columns=['col3_h', 'col3_s', 'col3_v',
+     'col2_h', 'col2_s', 'col2_v',
+     'col1_h', 'col1_s', 'col1_v'])
+X4.columns =["1","2","3"]
+y4 = df.drop(columns=['col4_h', 'col4_s', 'col4_v'])
+y4.columns = ["1","2","3","4","5","6","7","8","9"]
+
+X = pd.concat([X1,X2,X3,X4]).values.astype(np.float32)
+y = pd.concat([y1,y2,y3,y4]).values.astype(np.float32)
 
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.01, random_state=10)
 
