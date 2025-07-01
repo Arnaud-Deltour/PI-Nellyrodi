@@ -3,7 +3,8 @@ import numpy as np
 from numpy import random as rd
 import matplotlib.pyplot as plt
 from sklearn.cluster import KMeans
-img = cv2.imread('data_hsv/impressionist_paintings/0.jpg', cv2.IMREAD_COLOR)
+img = cv2.imread('PI-Nellyrodi/data_hsv/impressionist_paintings/0.jpg', cv2.IMREAD_COLOR)
+
 
 
 def hsv_distance(p1, p2):  # p1 et p2 sont des triplets de la forme [h,s,v]
@@ -18,7 +19,7 @@ def hsv_distance(p1, p2):  # p1 et p2 sont des triplets de la forme [h,s,v]
     x2 = r2 * np.cos(theta2)
     y2 = r2 * np.sin(theta2)
 
-    return (x1 - x2) ** 2 + (y1 - y2) ** 2 + (z1 - z2) ** 2
+    return ((x1 - x2) ** 2 + (y1 - y2) ** 2 + (z1 - z2) ** 2)**0.5
 
 def moyenne(cluster):
     """Calcul le centre (couleur moyenne) d'un cluster."""
@@ -65,7 +66,23 @@ class KMeans:
 #idealement renvoie d[couleur] = population
 
 #print(img.reshape(-1, 3).shape)  # Reshape the image to a 2D array of pixels
-kmeans = KMeans(n_clusters=4).fit(img.reshape(-1, 3))
+kmeans = KMeans(n_clusters=7).fit(img.reshape(-1, 3))
+
+#convert the clusters from HSV to RGB
+for i, (centroid, population) in kmeans.items():
+    centroid = np.clip(centroid, 0, 255).astype(int)
+    kmeans[i] = (cv2.cvtColor(np.array([[centroid]], dtype=np.uint8), cv2.COLOR_HSV2RGB)[0][0], population)
+
+#Plot the clusters
+plt.figure(figsize=(10, 5))
+for i, (centroid, population) in kmeans.items():
+    plt.bar(i, population, color=centroid / 255, label=f'Cluster {i} (Population: {population})')
+plt.xlabel('Cluster')
+plt.ylabel('Population')
+plt.title('Population of Clusters')
+plt.legend()
+plt.show()
+
 
 
 
