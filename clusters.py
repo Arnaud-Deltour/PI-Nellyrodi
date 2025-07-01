@@ -17,9 +17,9 @@ def foyer(n,M):
     foyers.append(premier_foyer)
     for i in range(1, n):
         
-        distances = np.array([min([hsv_distance(point,f) for point in M]) for f in foyers])
-        
+        distances = np.array([min([hsv_distance(point, f) for f in foyers]) for point in M])
         prochain_foyer = M[np.argmax(distances)]
+
         foyers.append(prochain_foyer)
     print("Foyers choisis:", foyers)
     return np.array(foyers)
@@ -61,7 +61,7 @@ def initialize(data, n):
     return np.array(centroids)
 
 class KMeans:
-    def __init__(self, n_clusters, max_iter=2):
+    def __init__(self, n_clusters, max_iter=10):
         self.n_clusters = n_clusters
         self.max_iter = max_iter
 
@@ -120,12 +120,12 @@ class KMeans:
         print("Dictionnaire des clusters:", dico)
         return dico
 
-"""
+
 
 #idealement renvoie d[couleur] = population
 
 #print(img.reshape(-1, 3).shape)  # Reshape the image to a 2D array of pixels
-kmeans = KMeans(n_clusters=20).fit(img.reshape(-1, 3))
+kmeans = KMeans(n_clusters=6).fit(img.reshape(-1, 3))
 
 #convert the clusters from HSV to RGB
 for i, (centroid, population) in kmeans.items():
@@ -142,4 +142,3 @@ plt.title('Population of Clusters')
 plt.legend()
 plt.show()
 
-"""
