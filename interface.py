@@ -1,6 +1,12 @@
 import tkinter as tk
 from tkinter import colorchooser
+from tensorflow.keras.models import load_model
+from tensorflow.data import Dataset
+import numpy as np
+import colorsys
+import pandas as pd
 
+model = load_model('impressionist_paintings.keras')
 
 def affichage(rgb):
     """
@@ -8,14 +14,18 @@ def affichage(rgb):
     - un entier n (nombre de cases)
     - une liste de n couleurs RGB (variations simulées ici)
     """
-    r, g, b = rgb
-    couleurs = []
-    n = 5  # Par exemple, 5 couleurs à afficher
+    hsv = colorsys.rgb_to_hsv(rgb[0]/255,rgb[1]/255,rgb[2]/255)
+    input = pd.DataFrame([[hsv[0], hsv[1], hsv[2]]]).values
+    couleurs = [colorsys.hsv_to_rgb(hsv[0],hsv[1],hsv[2])]
+    print(couleurs)
+    n = 1
 
-    # Générer n variations légères de la couleur d'origine
-    for i in range(n):
-        variation = (min(r + i * 20, 255), max(g - i * 10, 0), min(b + i * 15, 255))
-        couleurs.append(variation)
+    pred = model.predict(input)[0]
+    pred_hsv = np.array([pred[0], pred[1], pred[2], pred[3], pred[4], pred[5], pred[6], pred[7], pred[8]])
+    print(pred_hsv)
+    couleurs = [colorsys.hsv_to_rgb(hsv[0],hsv[1],hsv[2]), colorsys.hsv_to_rgb(pred_hsv[0],pred_hsv[1],pred_hsv[2]), colorsys.hsv_to_rgb(pred_hsv[3],pred_hsv[4],pred_hsv[5]), colorsys.hsv_to_rgb(pred_hsv[6],pred_hsv[7],pred_hsv[8])]
+    couleurs = [tuple(int(couleurs[i][j]*255) for j in range(len(couleurs[i]))) for i in range(len(couleurs))]
+    print(couleurs)
 
     return n, couleurs
 
