@@ -3,24 +3,20 @@ from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense
 from sklearn.model_selection import train_test_split
 import matplotlib.pyplot as plt
+import pandas as pd
 
-X = np.array([
-    [0, 255, 255],   # cyan
-    [0, 0, 0],       # black
-    [255, 0, 0],     # red
-    [0, 255, 0],     # green
-    [0, 0, 255]      # blue
-], dtype=np.float32) / 255.0
+# Load CSV
+df = pd.read_csv("generated_color_palette_dataset.csv")
+X = df[['input_r', 'input_g', 'input_b']].values.astype(np.float32)
+y = df[
+    ['out1_r', 'out1_g', 'out1_b',
+     'out2_r', 'out2_g', 'out2_b',
+     'out3_r', 'out3_g', 'out3_b']
+].values.astype(np.float32)
 
-y = np.array([
-    [50, 50, 50, 60, 60, 60, 70, 70, 70],
-    [30, 30, 30, 40, 40, 40, 50, 50, 50],
-    [200, 0, 0, 180, 20, 20, 160, 30, 30],
-    [0, 200, 0, 20, 180, 20, 30, 160, 30],
-    [0, 0, 200, 20, 20, 180, 30, 30, 160],
-], dtype=np.float32) / 255.0
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.01, random_state=1)
 
-X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=1)
+
 
 model = Sequential([
     Dense(32, input_dim=3, activation='relu'),
