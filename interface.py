@@ -17,15 +17,12 @@ def affichage(rgb):
     hsv = colorsys.rgb_to_hsv(rgb[0]/255,rgb[1]/255,rgb[2]/255)
     input = pd.DataFrame([[hsv[0], hsv[1], hsv[2]]]).values
     couleurs = [colorsys.hsv_to_rgb(hsv[0],hsv[1],hsv[2])]
-    print(couleurs)
     n = 1
 
     pred = model.predict(input)[0]
     pred_hsv = np.array([pred[0], pred[1], pred[2], pred[3], pred[4], pred[5], pred[6], pred[7], pred[8]])
-    print(pred_hsv)
     couleurs = [colorsys.hsv_to_rgb(hsv[0],hsv[1],hsv[2]), colorsys.hsv_to_rgb(pred_hsv[0],pred_hsv[1],pred_hsv[2]), colorsys.hsv_to_rgb(pred_hsv[3],pred_hsv[4],pred_hsv[5]), colorsys.hsv_to_rgb(pred_hsv[6],pred_hsv[7],pred_hsv[8])]
     couleurs = [tuple(int(couleurs[i][j]*255) for j in range(len(couleurs[i]))) for i in range(len(couleurs))]
-    print(couleurs)
 
     return n, couleurs
 
