@@ -102,6 +102,8 @@ class KMeans:
         print("Dictionnaire des clusters:", dico)
         return dico
 
+"""
+
 #idealement renvoie d[couleur] = population
 
 #print(img.reshape(-1, 3).shape)  # Reshape the image to a 2D array of pixels
@@ -121,3 +123,5 @@ plt.ylabel('Population')
 plt.title('Population of Clusters')
 plt.legend()
 plt.show()
+
+"""
