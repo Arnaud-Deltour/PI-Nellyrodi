@@ -3,11 +3,7 @@ import numpy as np
 from numpy import random as rd
 import matplotlib.pyplot as plt
 from sklearn.cluster import KMeans
-<<<<<<< HEAD
-img = cv2.imread('PI-Nellyrodi/data_hsv/impressionist_paintings/4.jpg', cv2.IMREAD_COLOR)
-=======
 img = cv2.imread('data_hsv/impressionist_paintings/2018.jpg', cv2.IMREAD_COLOR)
->>>>>>> 457e1702f622584fc6f20adfc5447de8d947390f
 
 def foyer(n,M):
     '''Le but est de génerer n foyers le premier choisi au hasard, le deuxième chosi de sorte que la distance soit la plus loin du premier et itération suivante la plus loin des précédents, n nombre de foyers, M matrice des points'''
