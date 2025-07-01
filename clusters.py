@@ -30,30 +30,29 @@ def initialize(data, n):
     centroids = []
     centroids.append(data[np.random.randint(data.shape[0])])
 
-    for _ in range(n - 1):
+    for _ in range(n-1):
+
         distances = []
         for point in data:
-            min_dist = min([hsv_distance(point, c) for c in centroids])
+            min_dist = max([hsv_distance(point, c) for c in centroids])
             distances.append(min_dist)
         
         next_centroid = data[np.argmax(distances)]
         centroids.append(next_centroid)
-    
+        
     return np.array(centroids)
 
 class KMeans:
-    def __init__(self, n_clusters, max_iter=1):
+    def __init__(self, n_clusters, max_iter=15):
         self.n_clusters = n_clusters
         self.max_iter = max_iter
 
-    def fit(self, X_train, seuil=0.30):
+    def fit(self, X_train, seuil=2):
         # Array containing the modified image
         modified_img = np.array(X_train, dtype=np.float32)
-        # Initialize centroids
+
         # Run initialization
         self.centroids = initialize(X_train, n=self.n_clusters)
-        #min_, max_ = np.min(X_train, axis=0), np.max(X_train, axis=0)
-        #self.centroids = [np.random.uniform(min_, max_) for _ in range(self.n_clusters)]
 
         # Iterate until convergence or max iterations
         iteration = 0
@@ -68,13 +67,17 @@ class KMeans:
                 for center in self.centroids:
                     dists.append(hsv_distance(x, center))
                 argmin = np.argmin(dists)
+
+                # If the distance is below the threshold, assign the point to the cluster
                 if dists[argmin] < seuil :
                     centroid_idx = argmin
                     sorted_points[centroid_idx].append(x)
                     # Store the index of the point in the corresponding cluster to rebuild the image later
                     sorted_points_coord[centroid_idx].append(i)
+
+                # If the distance is above the threshold, assign white
                 else :
-                    sorted_points[centroid_idx].append([179, 255, 255])  # Assign a default color if distance is too high
+                    sorted_points[centroid_idx].append([179, 255, 255])
                     # Store the index of the point in the corresponding cluster to rebuild the image later
                     sorted_points_coord[centroid_idx].append(i)
 
@@ -82,7 +85,7 @@ class KMeans:
             prev_centroids = self.centroids
             self.centroids = np.array([moyenne(cluster) for cluster in sorted_points])          
             iteration += 1
-            print(f"Iteration {iteration + 1}:")
+            print(f"Iteration {iteration + 1}")
 
         # Rebuild the image
         for i, cluster in enumerate(sorted_points):
@@ -102,7 +105,7 @@ class KMeans:
 #idealement renvoie d[couleur] = population
 
 #print(img.reshape(-1, 3).shape)  # Reshape the image to a 2D array of pixels
-kmeans = KMeans(n_clusters=12).fit(img.reshape(-1, 3))
+kmeans = KMeans(n_clusters=6).fit(img.reshape(-1, 3))
 
 #convert the clusters from HSV to RGB
 for i, (centroid, population) in kmeans.items():
