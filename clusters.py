@@ -3,16 +3,16 @@ import numpy as np
 from numpy import random as rd
 import matplotlib.pyplot as plt
 from sklearn.cluster import KMeans
-img = cv2.imread('data_hsv/impressionist_paintings/1.jpg', cv2.IMREAD_COLOR)
+img = cv2.imread('data_hsv/impressionist_paintings/2018.jpg', cv2.IMREAD_COLOR)
 
 
 def hsv_distance(p1, p2):  # p1 et p2 sont des triplets de la forme [h,s,v]
-    r1 = (p1[1] / 255) * (p1[2] / 255) * 5
+    r1 = (p1[1] / 255) * (p1[2] / 255) * 3
     theta1 = (p1[0] / 180) * 2 * np.pi
     z1 = p1[2] / 255 - 1
     x1 = r1 * np.cos(theta1)
     y1 = r1 * np.sin(theta1)
-    r2 = (p2[1] / 255) * (p2[2] / 255) * 5
+    r2 = (p2[1] / 255) * (p2[2] / 255) * 3
     theta2 = (p2[0] / 180) * 2 * np.pi
     z2 = p2[2] / 255 - 1
     x2 = r2 * np.cos(theta2)
@@ -47,7 +47,7 @@ class KMeans:
         self.n_clusters = n_clusters
         self.max_iter = max_iter
 
-    def fit(self, X_train, seuil=2):
+    def fit(self, X_train, seuil=10):
         # Array containing the modified image
         modified_img = np.array(X_train, dtype=np.float32)
 
@@ -67,10 +67,10 @@ class KMeans:
                 for center in self.centroids:
                     dists.append(hsv_distance(x, center))
                 argmin = np.argmin(dists)
+                centroid_idx = argmin
 
                 # If the distance is below the threshold, assign the point to the cluster
                 if dists[argmin] < seuil :
-                    centroid_idx = argmin
                     sorted_points[centroid_idx].append(x)
                     # Store the index of the point in the corresponding cluster to rebuild the image later
                     sorted_points_coord[centroid_idx].append(i)
