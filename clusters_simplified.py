@@ -6,17 +6,23 @@ from sklearn.cluster import KMeans
 
 def foyer(n,M):
     '''Le but est de génerer n foyers le premier choisi au hasard, le deuxième chosi de sorte que la distance soit la plus loin du premier et itération suivante la plus loin des précédents, n nombre de foyers, M matrice des points'''
+    M = np.array(M)
     foyers = []
-    l = rd.randint(M.shape[0])
-
-    premier_foyer = M[l] # Choisir le premier foyer au hasard
+    premier_foyer = M[500] # Choisir le premier foyer au hasard
     foyers.append(premier_foyer)
 
-    for i in range(1, n):
-        distances = np.array([min([hsv_distance(point, f) for f in foyers]) for point in M])
-        prochain_foyer = M[np.argmax(distances)]
+    # Distance initiale entre tous les points et le premier foyer
+    distances_min = [hsv_distance(point, premier_foyer) for point in M]
 
+    for i in range(1, n):
+        idx_max = np.argmax(distances_min)
+        prochain_foyer = M[idx_max]
         foyers.append(prochain_foyer)
+
+        # Mettre à jour les distances minimales
+        new_distances = [hsv_distance(point, prochain_foyer) for point in M]
+        distances_min = np.minimum(distances_min, new_distances)
+
     print("Foyers choisis :", foyers)
     return np.array(foyers)
 
@@ -124,3 +130,24 @@ class KMeans:
 
 #idealement renvoie d[couleur] = population
 
+#exemple : 
+
+img = cv2.imread('compressed_images_hsv/50.png', cv2.IMREAD_COLOR)
+
+#print(img.reshape(-1, 3).shape)  # Reshape the image to a 2D array of pixels
+kmeans = KMeans(n_clusters=8).fit(img.reshape(-1, 3))
+
+#convert the clusters from HSV to RGB
+for i, (centroid, population) in kmeans.items():
+    centroid = np.clip(centroid, 0, 255).astype(int)
+    kmeans[i] = (cv2.cvtColor(np.array([[centroid]], dtype=np.uint8), cv2.COLOR_HSV2RGB)[0][0], population)
+
+#Plot the clusters
+plt.figure(figsize=(10, 5))
+for i, (centroid, population) in kmeans.items():
+    plt.bar(i, population, color=centroid / 255, label=f'Cluster {i} (Population: {population})')
+plt.xlabel('Cluster')
+plt.ylabel('Population')
+plt.title('Population of Clusters')
+plt.legend()
+plt.show()
