@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 
 #img = cv2.imread('PI-Nellyrodi/data_hsv/impressionist_paintings/2019.jpg', cv2.IMREAD_COLOR)
 #img = cv2.imread('compressed_images_hsv/0.png', cv2.IMREAD_COLOR)
-img = cv2.imread('abstract_lab/0.png', cv2.IMREAD_COLOR)
+img = cv2.imread('abstract_lab/372.png', cv2.IMREAD_COLOR)
 #img = cv2.imread('image/img.jpg', cv2.IMREAD_COLOR)
 
 def foyer(n,M):
@@ -62,8 +62,8 @@ class KMeans_demo:
 
     def fit(self, X_train):
         # Array containing the modified image
-        modified_img = np.full_like(X_train, [100,127,0])
-        modified_img_totale = np.full_like(X_train, [100,127,0])
+        modified_img = np.full_like(X_train, [255,127,127])
+        modified_img_totale = np.full_like(X_train, [255,127,127])
 
         # Initialize centroids using the foyer function
         self.centroids = foyer(self.n_clusters, X_train)

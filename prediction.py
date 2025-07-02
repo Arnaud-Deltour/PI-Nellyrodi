@@ -73,7 +73,7 @@ def show_input_and_palettes(inputs, predictions):
         # Concatenate input + prediction colors: shape (1, 4, 3)
         row_colors = np.concatenate([input_color, pred_palette], axis=1)
 
-        axes[i].imshow(cv2.cvtColor(row_colors, cv2.COLOR_HSV2RGB))
+        axes[i].imshow(cv2.cvtColor(row_colors, cv2.COLOR_LAB2RGB))
         axes[i].set_xticks([])
         axes[i].set_yticks([])
         axes[i].set_title(f"Input + Predicted Palette {i+1}")
