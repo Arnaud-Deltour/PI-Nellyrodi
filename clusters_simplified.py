@@ -3,13 +3,49 @@ import numpy as np
 from numpy import random as rd
 import matplotlib.pyplot as plt
 from sklearn.cluster import KMeans
+from skimage import color
+import matplotlib.pyplot as plt
+
+
+
+def distance_point(c_1, c_2):
+    # Conversion en [0,1]
+    c1 = np.array(c_1) / 255
+    c2 = np.array(c_2) / 255
+
+    # Convertir RGB → Lab
+    lab1 = color.rgb2lab([[c1]])[0][0]
+    lab2 = color.rgb2lab([[c2]])[0][0]
+
+    # Distance euclidienne dans l'espace Lab (≈ perceptuelle)
+    distance = np.linalg.norm(lab1 - lab2)
+
+    #affichage
+    plt.imshow([[c_1,c_2]])
+    plt.show()
+
+    return distance
+
+def distance_liste(cible_rgb, liste_rgb):
+    # Mise à l'échelle [0, 1]
+    cible_rgb = np.array(cible_rgb) / 255.0
+    liste_rgb = np.array(liste_rgb) / 255.0
+
+    # Conversion en Lab
+    cible_lab = color.rgb2lab([[cible_rgb]])[0][0]       # (3,)
+    liste_lab = color.rgb2lab(liste_rgb.reshape(-1, 1, 3))[:, 0, :]  # (N, 3)
+
+    # Distance euclidienne (ΔE) entre la cible et chaque couleur
+    distances = np.linalg.norm(liste_lab - cible_lab, axis=1)
+
+    return distances
+
 
 def foyer(n,M):
     '''Le but est de génerer n foyers le premier choisi au hasard, le deuxième chosi de sorte que la distance soit la plus loin du premier et itération suivante la plus loin des précédents, n nombre de foyers, M matrice des points'''
     M = np.array(M)
-    foyers = []
-    premier_foyer = M[500] # Choisir le premier foyer au hasard
-    foyers.append(premier_foyer)
+    premier_foyer = M[500]
+    foyers = [premier_foyer]# Choisir le premier foyer au hasard
 
     # Distance initiale entre tous les points et le premier foyer
     distances_min = [hsv_distance(point, premier_foyer) for point in M]
@@ -25,20 +61,6 @@ def foyer(n,M):
 
     print("Foyers choisis :", foyers)
     return np.array(foyers)
-
-def hsv_distance(p1, p2):  # p1 et p2 sont des triplets de la forme [h,s,v]
-    r1 = (p1[1] / 255) * (p1[2] / 255) * 3
-    theta1 = (p1[0] / 180) * 2 * np.pi
-    z1 = (p1[2] / 255 - 1)
-    x1 = r1 * np.cos(theta1)
-    y1 = r1 * np.sin(theta1)
-    r2 = (p2[1] / 255) * (p2[2] / 255) * 3
-    theta2 = (p2[0] / 180) * 2 * np.pi
-    z2 = (p2[2] / 255 - 1)
-    x2 = r2 * np.cos(theta2)
-    y2 = r2 * np.sin(theta2)
-
-    return np.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2 + (z1 - z2) ** 2)
 
 def moyenne(cluster):
     """Calcul le centre (couleur moyenne) d'un cluster."""
