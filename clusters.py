@@ -2,9 +2,10 @@ import cv2
 import numpy as np
 from numpy import random as rd
 import matplotlib.pyplot as plt
-from sklearn.cluster import KMeans
+
 #img = cv2.imread('PI-Nellyrodi/data_hsv/impressionist_paintings/2019.jpg', cv2.IMREAD_COLOR)
-img = cv2.imread('compressed_images_hsv/0.png', cv2.IMREAD_COLOR)
+#img = cv2.imread('compressed_images_hsv/0.png', cv2.IMREAD_COLOR)
+img = cv2.imread('abstract_lab/0.png', cv2.IMREAD_COLOR)
 #img = cv2.imread('image/img.jpg', cv2.IMREAD_COLOR)
 
 def foyer(n,M):
@@ -19,7 +20,8 @@ def foyer(n,M):
     foyers.append(premier_foyer)
 
     for i in range(1, n):
-        distances = np.array([min([hsv_distance(point, f) for f in foyers]) for point in M])
+        #distances = np.array([min([hsv_distance(point, f) for f in foyers]) for point in M])
+        distances = np.array([min([distance_point(point, f) for f in foyers]) for point in M])
         prochain_foyer = M[np.argmax(distances)]
 
         foyers.append(prochain_foyer)
@@ -40,6 +42,10 @@ def hsv_distance(p1, p2):  # p1 et p2 sont des triplets de la forme [h,s,v]
 
     return np.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2 + (z1 - z2) ** 2)
 
+def distance_point(c_1, c_2):
+    return np.linalg.norm(c_1 - c_2)
+
+
 def moyenne(cluster):
     """Calcul le centre (couleur moyenne) d'un cluster."""
     if not cluster:
@@ -56,8 +62,8 @@ class KMeans_demo:
 
     def fit(self, X_train):
         # Array containing the modified image
-        modified_img = np.full_like(X_train, [0,0,255])
-        modified_img_totale = np.full_like(X_train, [0,0,255])
+        modified_img = np.full_like(X_train, [100,127,0])
+        modified_img_totale = np.full_like(X_train, [100,127,0])
 
         # Initialize centroids using the foyer function
         self.centroids = foyer(self.n_clusters, X_train)
@@ -73,7 +79,8 @@ class KMeans_demo:
                 dists = []
                 # Calculate distances to each centroid
                 for center in self.centroids:
-                    dists.append(hsv_distance(x, center))
+                    #dists.append(hsv_distance(x, center))
+                    dists.append(distance_point(x, center))
                 argmin = np.argmin(dists)
                 centroid_idx = argmin
 
@@ -106,7 +113,8 @@ class KMeans_demo:
         for _ in range(3):
             distances = []
             for new_centroid in clusters_centroids:
-                distances.append(np.array([hsv_distance(new_centroid, centroid) for centroid in self.centroids]))
+                #distances.append(np.array([hsv_distance(new_centroid, centroid) for centroid in self.centroids]))
+                distances.append(np.array([distance_point(new_centroid, centroid) for centroid in self.centroids]))
             #On fait ensuite la moyenne des sous-tableaux de distances
             print(distances)
 
@@ -148,7 +156,8 @@ class KMeans_demo:
 
         modified_img_totale = modified_img_totale.reshape((100, 100, 3)).astype(np.uint8)
         plt.figure(1)
-        plt.imshow(cv2.cvtColor(modified_img_totale, cv2.COLOR_HSV2RGB))
+        #plt.imshow(cv2.cvtColor(modified_img_totale, cv2.COLOR_HSV2RGB))
+        plt.imshow(cv2.cvtColor(modified_img_totale, cv2.COLOR_LAB2RGB))
 
         self.centroids = clusters_centroids
 
@@ -160,7 +169,7 @@ class KMeans_demo:
 
         modified_img = modified_img.reshape((100, 100, 3)).astype(np.uint8)
         plt.figure(2)
-        plt.imshow(cv2.cvtColor(modified_img, cv2.COLOR_HSV2RGB))
+        plt.imshow(cv2.cvtColor(modified_img, cv2.COLOR_LAB2RGB))
 
 
         
@@ -194,7 +203,8 @@ class KMeans:
                 dists = []
                 # Calculate distances to each centroid
                 for center in self.centroids:
-                    dists.append(hsv_distance(x, center))
+                    #dists.append(hsv_distance(x, center))
+                    dists.append(distance_point(x, center))
                 centroid_idx = np.argmin(dists)
 
                 sorted_points[centroid_idx].append(x)
@@ -226,7 +236,8 @@ class KMeans:
         for _ in range(3):
             distances = []
             for new_centroid in clusters_centroids:
-                distances.append(np.array([hsv_distance(new_centroid, centroid) for centroid in self.centroids]))
+                #distances.append(np.array([hsv_distance(new_centroid, centroid) for centroid in self.centroids]))
+                distances.append(np.array([distance_point(new_centroid, centroid) for centroid in self.centroids]))
             #On fait ensuite la moyenne des sous-tableaux de distances
 
             distances = dist_transform(np.array(distances))
@@ -267,7 +278,8 @@ kmeans = KMeans_demo(n_clusters=8).fit(img.reshape(-1, 3))
 #convert the clusters from HSV to RGB
 for i, (centroid, population) in kmeans.items():
     centroid = np.clip(centroid, 0, 255).astype(int)
-    kmeans[i] = (cv2.cvtColor(np.array([[centroid]], dtype=np.uint8), cv2.COLOR_HSV2RGB)[0][0], population)
+    #kmeans[i] = (cv2.cvtColor(np.array([[centroid]], dtype=np.uint8), cv2.COLOR_HSV2RGB)[0][0], population)
+    kmeans[i] = (cv2.cvtColor(np.array([[centroid]], dtype=np.uint8), cv2.COLOR_LAB2RGB)[0][0], population)
 
 #Plot the clusters
 plt.figure(figsize=(10, 5))
