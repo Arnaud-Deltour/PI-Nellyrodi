@@ -30,6 +30,7 @@ def hsv_to_csv(nom_dossier, nom_nouveau_csv):
 
 
     for image in image_list :
+        # Reshape the image to a 2D array of pixels
         dico = KMeans(n_clusters=4, max_iter=5).fit(image.reshape(-1,3))
         add_to_csv(nom_nouveau_csv,dico)
 
