@@ -4,11 +4,14 @@ from numpy import random as rd
 import matplotlib.pyplot as plt
 from sklearn.cluster import KMeans
 #img = cv2.imread('PI-Nellyrodi/data_hsv/impressionist_paintings/2019.jpg', cv2.IMREAD_COLOR)
-img = cv2.imread('compressed_images_hsv/50.png', cv2.IMREAD_COLOR)
+img = cv2.imread('compressed_images_hsv/35.png', cv2.IMREAD_COLOR)
 #img = cv2.imread('image/img.jpg', cv2.IMREAD_COLOR)
 
 def foyer(n,M):
-    '''Le but est de génerer n foyers le premier choisi au hasard, le deuxième chosi de sorte que la distance soit la plus loin du premier et itération suivante la plus loin des précédents, n nombre de foyers, M matrice des points'''
+    '''Le but est de génerer n foyers le premier choisi au hasard, le deuxième chosi de sorte que
+    la distance soit la plus loin du premier et itération suivante la plus loin des précédents,
+    n nombre de foyers, M matrice des points'''
+
     foyers = []
     l = rd.randint(M.shape[0])
 
@@ -24,12 +27,12 @@ def foyer(n,M):
     return np.array(foyers)
 
 def hsv_distance(p1, p2):  # p1 et p2 sont des triplets de la forme [h,s,v]
-    r1 = (p1[1] / 255) * (p1[2] / 255) * 3
+    r1 = (p1[1] / 255) * (p1[2] / 255) * 2
     theta1 = (p1[0] / 180) * 2 * np.pi
     z1 = (p1[2] / 255 - 1)
     x1 = r1 * np.cos(theta1)
     y1 = r1 * np.sin(theta1)
-    r2 = (p2[1] / 255) * (p2[2] / 255) * 3
+    r2 = (p2[1] / 255) * (p2[2] / 255) * 2
     theta2 = (p2[0] / 180) * 2 * np.pi
     z2 = (p2[2] / 255 - 1)
     x2 = r2 * np.cos(theta2)
@@ -43,15 +46,15 @@ def moyenne(cluster):
         return np.array([0, 0, 0])
     return np.mean(cluster, axis=0)
 
-class KMeans:
+class KMeans_demo:
     def __init__(self, n_clusters, max_iter=4):
         self.n_clusters = n_clusters
         self.max_iter = max_iter
 
     def fit(self, X_train):
         # Array containing the modified image
-        #modified_img = np.array(X_train, dtype=np.uint8)
         modified_img = np.full_like(X_train, [0,0,255])
+        modified_img_totale = np.full_like(X_train, [0,0,255])
 
         # Initialize centroids using the foyer function
         self.centroids = foyer(self.n_clusters, X_train)
@@ -96,7 +99,33 @@ class KMeans:
         clusters_coord.append(sorted_points_coord[idx])  # Append the corresponding coordinates
         clusters_centroids = [self.centroids[idx]]
 
-        # Select the clusters with the centroids that are the most distant from the first one
+        # Select the clusters with the centroids that are the most distant from the previous ones
+        idx_list = [] #list for already selected indexes
+        for _ in range(3):
+            distances = []
+            for new_centroid in clusters_centroids:
+                distances.append(np.array([hsv_distance(new_centroid, centroid) for centroid in self.centroids]))
+            #On fait ensuite la moyenne des sous-tableaux de distances
+            print(distances)
+            
+            distances_moy = np.mean(np.array(distances), axis=0)
+            print("dist moy :", distances_moy)
+
+            for idx in idx_list:
+                distances_moy[idx] = 0
+
+
+            # On en extrait le max
+            idx = np.argmax(distances_moy)
+            idx_list.append(idx)
+            print("idx :", idx)
+            next_centroid = self.centroids[idx]
+
+            clusters.append(sorted_points[idx])
+            clusters_coord.append(sorted_points_coord[idx])
+            clusters_centroids.append(next_centroid)
+
+        """"
         for _ in range(3):
             distances = np.array([min([hsv_distance(new_centroid, centroid) for new_centroid in clusters_centroids]) for centroid in self.centroids])
             idx = np.argmax(distances)
@@ -105,16 +134,29 @@ class KMeans:
             clusters.append(sorted_points[idx])
             clusters_coord.append(sorted_points_coord[idx])
             clusters_centroids.append(next_centroid)
+            """
+        # Rebuild the whole image
+        for i, cluster in enumerate(sorted_points):
+            for idx in sorted_points_coord[i]:
+                modified_img_totale[idx] = self.centroids[i]
+
+        modified_img_totale = modified_img_totale.reshape((100, 100, 3)).astype(np.uint8)
+        plt.figure(1)
+        plt.imshow(cv2.cvtColor(modified_img_totale, cv2.COLOR_HSV2RGB))
 
         self.centroids = clusters_centroids
 
-        # Rebuild the image
+        # Rebuild the image with selected clusters
         for i, cluster in enumerate(clusters):
             for idx in clusters_coord[i]:
                 modified_img[idx] = self.centroids[i]
 
+
         modified_img = modified_img.reshape((100, 100, 3)).astype(np.uint8)
+        plt.figure(2)
         plt.imshow(cv2.cvtColor(modified_img, cv2.COLOR_HSV2RGB))
+
+
         
         print(f"Convergence après {iteration} iterations.")
         dico = {}
@@ -128,7 +170,7 @@ class KMeans:
 #idealement renvoie d[couleur] = population
 
 #print(img.reshape(-1, 3).shape)  # Reshape the image to a 2D array of pixels
-kmeans = KMeans(n_clusters=8).fit(img.reshape(-1, 3))
+kmeans = KMeans_demo(n_clusters=8).fit(img.reshape(-1, 3))
 
 #convert the clusters from HSV to RGB
 for i, (centroid, population) in kmeans.items():
