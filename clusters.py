@@ -4,8 +4,8 @@ from numpy import random as rd
 import matplotlib.pyplot as plt
 
 #img = cv2.imread('PI-Nellyrodi/data_hsv/impressionist_paintings/2019.jpg', cv2.IMREAD_COLOR)
-#img = cv2.imread('compressed_images_hsv/0.png', cv2.IMREAD_COLOR)
-img = cv2.imread('abstract_lab/4360.png', cv2.IMREAD_COLOR)
+img = cv2.imread('impressionist_lab/860.png', cv2.IMREAD_COLOR)
+#img = cv2.imread('abstract_lab/4360.png', cv2.IMREAD_COLOR)
 #img = cv2.imread('image/img.jpg', cv2.IMREAD_COLOR)
 
 def foyer(n,M):
@@ -249,7 +249,7 @@ class KMeans:
         return dico
 
 #print(img.reshape(-1, 3).shape)  # Reshape the image to a 2D array of pixels
-kmeans = KMeans_demo(n_clusters=4, max_iter=3).fit(img.reshape(-1, 3))
+kmeans = KMeans_demo(n_clusters=4).fit(img.reshape(-1, 3))
 
 #convert the clusters from HSV to RGB
 for i, (centroid, population) in kmeans.items():
