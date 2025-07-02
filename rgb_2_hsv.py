@@ -1,8 +1,8 @@
 import cv2
 import os
 
-dataset_dir = 'compressed_images_png'
-dataset_hsv_dir = 'compressed_images_hsv'
+dataset_dir = 'abstract_compressed'
+dataset_hsv_dir = 'abstract_hsv'
 
 # Créer dossier de sortie s'il n'existe pas
 os.makedirs(dataset_hsv_dir, exist_ok=True)
