@@ -26,7 +26,7 @@ def hsv_to_csv(nom_dossier, nom_nouveau_csv):
 
     with open(nom_nouveau_csv, mode='w', newline='', encoding='utf-8') as csvfile:
         writer = csv.writer(csvfile)
-        writer.writerow('col1_h,col1_s,col1_v,col2_h,col2_s,col2_v,col3_h,col3_s,col3_v,col4_h,col4_s,col4_v')
+        writer.writerow(['col1_h','col1_s','col1_v','col2_h','col2_s','col2_v','col3_h','col3_s','col3_v','col4_h','col4_s','col4_v'])
 
 
     for image in image_list :
@@ -34,4 +34,4 @@ def hsv_to_csv(nom_dossier, nom_nouveau_csv):
         dico = KMeans(n_clusters=4, demo=True, print_clusters=False).fit(image.reshape(-1, 3))
         add_to_csv(nom_nouveau_csv,dico)
 
-hsv_to_csv("abstract_lab", "data_abstract2")
+hsv_to_csv("abstract_lab", "data_abstract2.csv")
