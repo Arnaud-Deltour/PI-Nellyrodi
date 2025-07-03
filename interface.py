@@ -5,33 +5,40 @@ import numpy as np
 import colorsys
 import pandas as pd
 
-# Chargement du modèle
-model = load_model("impressionist_paintings.keras")
+# Mapping des styles à leurs fichiers modèles
+model_paths = {
+    "Art impressioniste": "impressionist_paintings.keras",
+    "Art abstrait": "abstract_art.keras",
+    "Mode et luxe": "fashion_luxury.keras",
+}
+models = {}
 
-# --- Fenêtre principale ---
 fenetre = tk.Tk()
-fenetre.title("Sélecteur de couleur et affichage")
-fenetre.geometry("1000x650")
-fenetre.configure(bg="#1f1f1f")  # fond plus sombre pour contraste
+fenetre.title("Sélecteur de couleurs artistiques")
+fenetre.geometry("1000x700")
+fenetre.configure(bg="#202124")
 
-# Liste des styles
-styles = ["Art impressioniste", "Art abstrait", "Mode et luxe"]
-
-# Variable pour le style (valeur initiale = vide)
+styles = list(model_paths.keys())
 style_selectionne = tk.StringVar(value="")
 
-# Font globales
-font_title = ("Segoe UI", 18, "bold")
+# Polices et couleurs
+font_title = ("Segoe UI", 20, "bold")
 font_label = ("Segoe UI", 13)
 font_small = ("Segoe UI", 10)
+couleur_fond = "#202124"
+couleur_fond_cadre = "#2c2f33"
+couleur_texte = "#e8eaed"
+couleur_accent = "#8ab4f8"
+couleur_bouton = "#1a73e8"
+couleur_bouton_hover = "#1967d2"
 
-# Label dynamique pour afficher le style sélectionné
+# Texte dynamique du style sélectionné
 label_style_actuel = tk.Label(
     fenetre,
     text="Style sélectionné : Aucun",
     font=font_label,
-    fg="#eeeeee",
-    bg="#1f1f1f",
+    fg=couleur_texte,
+    bg=couleur_fond,
 )
 label_style_actuel.pack(pady=(10, 5))
 
@@ -42,17 +49,26 @@ def texte_contraste(rgb):
 
 
 def affichage(rgb, style):
+    if style not in models:
+        try:
+            models[style] = load_model(model_paths[style])
+        except Exception as e:
+            print(f"Erreur : {e}")
+            return 0, []
+
+    model = models[style]
+
     hsv = colorsys.rgb_to_hsv(rgb[0] / 255, rgb[1] / 255, rgb[2] / 255)
     input = pd.DataFrame([[hsv[0], hsv[1], hsv[2]]]).values
 
     pred = model.predict(input)[0]
-    pred_hsv = np.array([pred[i] for i in range(9)])
+    pred_hsv = np.array(pred[:9])
 
     couleurs = [
-        (rgb[0], rgb[1], rgb[2]),
-        colorsys.hsv_to_rgb(pred_hsv[0], pred_hsv[1], pred_hsv[2]),
-        colorsys.hsv_to_rgb(pred_hsv[3], pred_hsv[4], pred_hsv[5]),
-        colorsys.hsv_to_rgb(pred_hsv[6], pred_hsv[7], pred_hsv[8]),
+        rgb,
+        colorsys.hsv_to_rgb(*pred_hsv[0:3]),
+        colorsys.hsv_to_rgb(*pred_hsv[3:6]),
+        colorsys.hsv_to_rgb(*pred_hsv[6:9]),
     ]
 
     couleurs = [tuple(int(c * 255) for c in couleur) for couleur in couleurs]
@@ -64,17 +80,9 @@ def activer_bouton(*args):
     if val in styles:
         bouton.config(state="normal")
         label_style_actuel.config(text=f"Style sélectionné : {val}")
-        # Apparence menu après sélection
-        menu.config(
-            bg="#2e2e2e",
-            fg="#f0f0f0",
-            activebackground="#454545",
-            activeforeground="#f0f0f0",
-        )
     else:
         bouton.config(state="disabled")
         label_style_actuel.config(text="Style sélectionné : Aucun")
-        menu.config(bg="#2e2e2e", fg="#f0f0f0")
 
 
 def choisir_couleur():
@@ -91,67 +99,72 @@ def choisir_couleur():
         rgb_tuple = tuple(map(int, rgb))
         n, liste_couleurs = affichage(rgb_tuple, style_selectionne.get())
 
-        # Conteneur des couleurs (avec bordure et ombre légère)
-        cadre_couleur_choisie = tk.Frame(
-            cadre_couleurs, bg="#2e2e2e", bd=2, relief="ridge", padx=8, pady=8
+        # Couleur choisie
+        cadre_choisie = tk.Frame(
+            cadre_couleurs,
+            bg=couleur_fond_cadre,
+            bd=2,
+            relief="groove",
+            padx=10,
+            pady=10,
         )
-        cadre_couleur_choisie.pack(side="left", padx=12, pady=12)
+        cadre_choisie.pack(side="left", padx=10, pady=10)
 
-        label_choix_titre = tk.Label(
-            cadre_couleur_choisie,
+        label = tk.Label(
+            cadre_choisie,
             text="Couleur choisie",
             font=font_label,
-            fg="#f0f0f0",
-            bg="#2e2e2e",
+            fg=couleur_texte,
+            bg=couleur_fond_cadre,
         )
-        label_choix_titre.pack(pady=(0, 6))
+        label.pack(pady=(0, 6))
 
         hex_color = "#%02x%02x%02x" % rgb_tuple
-        case_choisie = tk.Frame(
-            cadre_couleur_choisie,
+        case = tk.Frame(
+            cadre_choisie,
             bg=hex_color,
             width=120,
             height=120,
-            bd=4,
-            relief="groove",
+            bd=3,
+            relief="solid",
+            highlightbackground=couleur_accent,
             highlightthickness=2,
-            highlightbackground="#ff9f1c",
         )
-        case_choisie.pack()
+        case.pack()
 
-        # Cases générées par le modèle
+        # Couleurs générées
         for i, couleur in enumerate(liste_couleurs[1:], start=1):
-            cadre_couleur = tk.Frame(
-                cadre_couleurs, bg="#2e2e2e", bd=2, relief="ridge", padx=6, pady=6
+            cadre = tk.Frame(
+                cadre_couleurs,
+                bg=couleur_fond_cadre,
+                bd=2,
+                relief="groove",
+                padx=10,
+                pady=10,
             )
-            cadre_couleur.pack(side="left", padx=12, pady=12)
+            cadre.pack(side="left", padx=10, pady=10)
 
-            label_titre_couleur = tk.Label(
-                cadre_couleur,
+            label = tk.Label(
+                cadre,
                 text=f"Couleur {i}",
                 font=font_label,
-                fg="#f0f0f0",
-                bg="#2e2e2e",
+                fg=couleur_texte,
+                bg=couleur_fond_cadre,
             )
-            label_titre_couleur.pack(pady=(0, 6))
+            label.pack(pady=(0, 6))
 
             hex_color = "#%02x%02x%02x" % couleur
             case = tk.Frame(
-                cadre_couleur,
-                bg=hex_color,
-                width=110,
-                height=110,
-                bd=3,
-                relief="raised",
+                cadre, bg=hex_color, width=110, height=110, bd=3, relief="ridge"
             )
             case.pack()
 
             label_rgb = tk.Label(
                 case,
                 text=str(couleur),
-                bg=hex_color,
-                fg=texte_contraste(couleur),
                 font=font_small,
+                fg=texte_contraste(couleur),
+                bg=hex_color,
             )
             label_rgb.place(relx=0.5, rely=0.5, anchor="center")
 
@@ -159,87 +172,86 @@ def choisir_couleur():
 # Titre principal
 label_titre = tk.Label(
     fenetre,
-    text="Générateur de palettes de couleurs harmonieuses",
+    text="Générateur de palettes harmonieuses",
     font=font_title,
-    fg="#f0f0f0",
-    bg="#1f1f1f",
-    pady=10,
+    fg=couleur_accent,
+    bg=couleur_fond,
 )
-label_titre.pack()
+label_titre.pack(pady=10)
 
-# Description / Sous-titre
-label_sous_titre = tk.Label(
+# Sous-titre
+label_sous = tk.Label(
     fenetre,
-    text="Choisissez un style artistique puis une couleur pour découvrir des harmonies adaptées",
+    text="Sélectionnez un style artistique et découvrez des harmonies de couleurs inspirées",
     font=("Segoe UI", 12, "italic"),
     fg="#bbbbbb",
-    bg="#1f1f1f",
-    pady=5,
+    bg=couleur_fond,
 )
-label_sous_titre.pack()
+label_sous.pack(pady=(0, 15))
 
-# Cadre du menu déroulant avec marge
-cadre_menu = tk.Frame(fenetre, bg="#1f1f1f")
-cadre_menu.pack(pady=15)
+# Menu déroulant
+cadre_menu = tk.Frame(fenetre, bg=couleur_fond)
+cadre_menu.pack(pady=10)
 
 label_menu = tk.Label(
     cadre_menu,
-    text="Choisissez un style artistique :",
+    text="Style artistique :",
     font=font_label,
-    fg="#e0e0e0",
-    bg="#1f1f1f",
+    fg=couleur_texte,
+    bg=couleur_fond,
 )
 label_menu.grid(row=0, column=0, sticky="w")
 
 menu = tk.OptionMenu(cadre_menu, style_selectionne, *styles)
 menu.config(
     font=font_label,
-    bg="#2e2e2e",
-    fg="#f0f0f0",
-    activebackground="#454545",
-    activeforeground="#f0f0f0",
+    bg=couleur_fond_cadre,
+    fg=couleur_texte,
+    activebackground="#444",
+    activeforeground="white",
     bd=0,
     highlightthickness=0,
+    relief="flat",
+    width=20,
 )
-menu.grid(row=1, column=0, sticky="w", pady=6, ipadx=10, ipady=4)
+menu.grid(row=1, column=0, pady=6, ipadx=6, ipady=4)
 
-# Bouton choix couleur stylé avec hover
+# Bouton
 bouton = tk.Button(
     fenetre,
     text="Choisir une couleur",
     font=font_label,
     command=choisir_couleur,
     state="disabled",
-    bg="#ff9f1c",
-    fg="#1f1f1f",
-    activebackground="#e68a00",
-    activeforeground="#ffffff",
+    bg=couleur_bouton,
+    fg="white",
+    activebackground=couleur_bouton_hover,
+    activeforeground="white",
     bd=0,
-    relief="ridge",
-    padx=14,
+    relief="flat",
+    padx=12,
     pady=8,
     cursor="hand2",
 )
 bouton.pack(pady=15)
 
 
-# Ajout d'effet hover sur bouton
 def on_enter(e):
-    e.widget.config(bg="#e68a00")
+    e.widget.config(bg=couleur_bouton_hover)
 
 
 def on_leave(e):
-    e.widget.config(bg="#ff9f1c")
+    e.widget.config(bg=couleur_bouton)
 
 
 bouton.bind("<Enter>", on_enter)
 bouton.bind("<Leave>", on_leave)
 
-# Cadre pour les couleurs affichées
-cadre_couleurs = tk.Frame(fenetre, bg="#1f1f1f")
-cadre_couleurs.pack(pady=10, fill="both", expand=True)
+# Cadre des couleurs
+cadre_couleurs = tk.Frame(fenetre, bg=couleur_fond)
+cadre_couleurs.pack(pady=15, fill="both", expand=True)
 
-# Trace pour gestion du bouton et menu
+# Activation du bouton quand un style est choisi
 style_selectionne.trace_add("write", activer_bouton)
 
 fenetre.mainloop()
