@@ -8,7 +8,7 @@ import cv2
 
 # Load CSV
 #df = pd.read_csv("generated_color_palette_dataset.csv")
-df = pd.read_csv("data2.csv")
+df = pd.read_csv("data_abstract.csv")
 X1 = df.drop(columns=['col2_h', 'col2_s', 'col2_v',
      'col3_h', 'col3_s', 'col3_v',
      'col4_h', 'col4_s', 'col4_v'])
@@ -42,7 +42,7 @@ X = pd.concat([X1,X2,X3,X4]).values.astype(np.float32)
 y = pd.concat([y1,y2,y3,y4]).values.astype(np.float32)
 """
 
-X_train, X_test, y_train, y_test = train_test_split(X1, y1, test_size=0.01, random_state=10)
+X_train, X_test, y_train, y_test = train_test_split(X1, y1, test_size=0.01, random_state=130)
 
 
 model = Sequential([
@@ -51,7 +51,7 @@ model = Sequential([
     Dense(9, activation='sigmoid')  # 3 HSV vectors = 9 values
 ])
 
-model.compile(optimizer='SGD', loss='mse', metrics=['accuracy'])
+model.compile(optimizer='Adam', loss='mse', metrics=['accuracy'])
 
 model.fit(X_train, y_train, epochs=200, verbose=1)
 predictions = model.predict(X_test)
@@ -65,9 +65,9 @@ def show_input_and_palettes(inputs, predictions):
         axes = [axes]  # Ensure iterable
 
     for i, (input_hsv, pred) in enumerate(zip(inputs, predictions)):
-        input_rgb = np.array([input_hsv[0]*179, input_hsv[1]*255, input_hsv[2]*255])
+        input_rgb = np.array([input_hsv[0]*255, input_hsv[1]*255+127, input_hsv[2]*255+127])
         input_color = input_rgb.astype(np.uint8).reshape(1, 1, 3)
-        pred_rgb = np.array([pred[0]*179, pred[1]*255, pred[2]*255, pred[3]*179, pred[4]*255, pred[5]*255, pred[6]*179, pred[7]*255, pred[8]*255])
+        pred_rgb = np.array([pred[0]*255, pred[1]*255-127, pred[2]*255-127, pred[3]*255, pred[4]*255-127, pred[5]*255-127, pred[6]*255, pred[7]*255-127, pred[8]*255-127])
         pred_palette = pred_rgb.reshape(3, 3).astype(np.uint8).reshape(1, 3, 3)
 
         # Concatenate input + prediction colors: shape (1, 4, 3)
