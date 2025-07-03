@@ -49,7 +49,7 @@ y = pd.concat([y1,y2,y3,y4]).values.astype(np.float32)
 """
 
 #X_train, X_test, y_train, y_test = train_test_split(X1, y1, test_size=0.01, random_state=103)
-X_train, y_train = X, y
+X_train, y_train = X[:2000], y[:2000]
 X_test, y_test = X[25:32], y[25:32]
 
 model = Sequential([
@@ -66,7 +66,7 @@ model = Sequential([
 
 model.compile(optimizer='Adam', loss='mse', metrics=['mae','accuracy'])
 
-model.fit(X_train, y_train, epochs=2000, verbose=1)
+model.fit(X_train, y_train, epochs=1500, verbose=1)
 predictions = model.predict(X_test)
 
 
@@ -96,7 +96,7 @@ show_input_and_palettes(X_test, predictions)
 
 #print(model.evaluate(X_test, y_test))
 
-model.save('abstract_art.keras')
+model.save('abstract_art1.keras')
 
 """
 palettes = np.concatenate([X_train[1],y_train[1]], axis=0)
