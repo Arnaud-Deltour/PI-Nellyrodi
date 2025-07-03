@@ -8,14 +8,12 @@ import cv2
 
 # Mapping des styles à leurs fichiers modèles
 model_paths = {
-    "Art impressioniste": "impressionist_paintings.keras",
-    "Art abstrait": "abstract_art.keras",
-    "Mode et luxe": "fashion_luxury.keras",
-}
-models = {}
+    "Art impressioniste": ["impressionist_paintings1.keras","impressionist_paintings2.keras","impressionist_paintings3.keras"],
+    "Art abstrait": ["abstract_art.keras","abstract_art.keras","abstract_art.keras"]}
+models = {"Art impressioniste":"","Art abstrait":""}
 
 fenetre = tk.Tk()
-fenetre.title("Générateur de palettes de couleurs")
+fenetre.title("HarmonIA - Générateur de palettes de couleurs")
 fenetre.geometry(f"{fenetre.winfo_screenwidth()}x{fenetre.winfo_screenheight()}")
 fenetre.state("zoomed")  # Fonctionne sous Windows
 #fenetre.attributes('-fullscreen', True)
@@ -25,25 +23,14 @@ styles = list(model_paths.keys())
 style_selectionne = tk.StringVar(value="")
 
 # Polices et couleurs
-font_title = ("Segoe UI", 15, "bold")
-font_label = ("Segoe UI", 10)
-font_small = ("Segoe UI", 9)
+font_title = ("Bahnschrift", 25)
+font_label = ("Helvetica Light", 12)
+font_small = ("Bahnschrift Light", 9)
 couleur_fond = "#ffffff"
 couleur_fond_cadre = "#d9d9d9"
 couleur_texte = "black"
-couleur_accent = "#8ab4f8"
-couleur_bouton = "#1a73e8"
-couleur_bouton_hover = "#1967d2"
-
-# Texte dynamique des données sélectionnées
-label_style_actuel = tk.Label(
-    fenetre,
-    text="Données sélectionnées : Aucune",
-    font=font_label,
-    fg=couleur_texte,
-    bg=couleur_fond,
-)
-label_style_actuel.pack(pady=(10, 5))
+couleur_bouton = "#626262"
+couleur_bouton_hover = "#181818"
 
 #Détermine la couleur d'affichage du texte
 def texte_contraste(rgb):
@@ -52,47 +39,66 @@ def texte_contraste(rgb):
 
 # Récupère les couleurs issues de la prédiction par le perceptron
 def get_colors(rgb, style):
-    if style not in models:
-        try:
-            models[style] = load_model(model_paths[style])
-        except Exception as e:
-            print(f"Erreur : {e}")
-            return 0, []
-
-    model = models[style]
+    models = model_paths[style]
+    model1 = load_model(models[0])
+    model2 = load_model(models[1])
+    model3 = load_model(models[2])
 
     hsv = colorsys.rgb_to_hsv(rgb[0] / 255, rgb[1] / 255, rgb[2] / 255)
     input = pd.DataFrame([[hsv[0], hsv[1], hsv[2]]]).values
 
-    pred = model.predict(input)[0]
-    pred_lab = np.array(pred[:9])
+    pred1 = model1.predict(input)[0]
+    pred_lab1 = np.array(pred1[:9])
+    pal_converting1 = np.clip(pred_lab1*255,0,255).astype(int)
+    pal_converting1 = np.array([np.array([pal_converting1[0:3],pal_converting1[3:6],pal_converting1[6:9]])])
+    pal_converted1 = cv2.cvtColor(np.array(pal_converting1, dtype=np.uint8), cv2.COLOR_LAB2RGB)
 
-    pal_converting = np.clip(pred_lab*255,0,255).astype(int)
-    pal_converting = np.array([np.array([pal_converting[0:3],pal_converting[3:6],pal_converting[6:9]])])
-    pal_converted = cv2.cvtColor(np.array(pal_converting, dtype=np.uint8), cv2.COLOR_LAB2RGB)
+    pred2 = model2.predict(input)[0]
+    pred_lab2 = np.array(pred2[:9])
+    pal_converting2 = np.clip(pred_lab2*255,0,255).astype(int)
+    pal_converting2 = np.array([np.array([pal_converting2[0:3],pal_converting2[3:6],pal_converting2[6:9]])])
+    pal_converted2 = cv2.cvtColor(np.array(pal_converting2, dtype=np.uint8), cv2.COLOR_LAB2RGB)
+
+    pred3 = model3.predict(input)[0]
+    pred_lab3 = np.array(pred3[:9])
+    pal_converting3 = np.clip(pred_lab3*255,0,255).astype(int)
+    pal_converting3 = np.array([np.array([pal_converting3[0:3],pal_converting3[3:6],pal_converting3[6:9]])])
+    pal_converted3 = cv2.cvtColor(np.array(pal_converting3, dtype=np.uint8), cv2.COLOR_LAB2RGB)
 
     # Couleurs à afficher
-    couleurs = [
+    couleurs1 = [
         rgb,
-        pal_converted[0][0],
-        pal_converted[0][1],
-        pal_converted[0][2],
+        pal_converted1[0][0],
+        pal_converted1[0][1],
+        pal_converted1[0][2],
+    ]
+    couleurs2 = [
+        rgb,
+        pal_converted2[0][0],
+        pal_converted2[0][1],
+        pal_converted2[0][2],
+    ]
+    couleurs3 = [
+        rgb,
+        pal_converted3[0][0],
+        pal_converted3[0][1],
+        pal_converted3[0][2],
     ]
 
     #couleurs = liste de 4 tuples en RGB de 0 à 255
-    couleurs = [tuple(int(c) for c in couleur) for couleur in couleurs]
+    couleurs1 = [tuple(int(c) for c in couleur) for couleur in couleurs1]
+    couleurs2 = [tuple(int(c) for c in couleur) for couleur in couleurs2]
+    couleurs3 = [tuple(int(c) for c in couleur) for couleur in couleurs3]
     #print("Couleurs post tuple : ",couleurs)
-    return len(couleurs), couleurs
+    return couleurs1, couleurs2, couleurs3
 
 
 def activer_bouton(*args):
     val = style_selectionne.get()
     if val in styles:
         bouton.config(state="normal")
-        label_style_actuel.config(text=f"Style sélectionné : {val}")
     else:
         bouton.config(state="disabled")
-        label_style_actuel.config(text="Style sélectionné : Aucun")
 
 def choisir_couleur():
     if style_selectionne.get() not in styles:
@@ -106,17 +112,81 @@ def choisir_couleur():
             widget.destroy()
 
         input_rgb_tuple = tuple(map(int, input_rgb))
-        _, liste_couleurs = get_colors(input_rgb_tuple, style_selectionne.get())
+        liste_couleurs = get_colors(input_rgb_tuple, style_selectionne.get())
 
-        # Container for the palette
-        palette_frame = tk.Frame(cadre_couleurs, bg=couleur_fond)
-        palette_frame.pack(pady=0)
+        # Container for palette1
+        palette_frame1 = tk.Frame(cadre_couleurs, bg=couleur_fond_cadre, pady=30)
+        palette_frame1.pack(pady=0)
 
-        for i, couleur in enumerate(liste_couleurs):
+        for i, couleur in enumerate(liste_couleurs[0]):
             hex_color = "#%02x%02x%02x" % couleur
 
             # Create a vertical container for the color + label
-            color_container = tk.Frame(palette_frame, bg=couleur_fond_cadre)
+            color_container = tk.Frame(palette_frame1, bg=couleur_fond_cadre)
+            color_container.grid(row=0, column=i, padx=0, pady=0)
+
+            # The color block
+            case = tk.Frame(
+                color_container,
+                bg=hex_color,
+                width=150,   # width of each block
+                height=65,
+                bd=0,
+                relief="flat"
+            )
+            case.pack()
+
+            # The RGB label below
+            label_rgb = tk.Label(
+                color_container,
+                text=str(couleur),
+                font=font_small,
+                fg="black",
+                bg=couleur_fond_cadre,
+            )
+            label_rgb.pack(pady=4)
+
+        # Container for palette2
+        palette_frame2 = tk.Frame(cadre_couleurs, bg=couleur_fond_cadre, pady=30)
+        palette_frame2.pack(pady=0)
+
+        for i, couleur in enumerate(liste_couleurs[1]):
+            hex_color = "#%02x%02x%02x" % couleur
+
+            # Create a vertical container for the color + label
+            color_container = tk.Frame(palette_frame2, bg=couleur_fond_cadre)
+            color_container.grid(row=0, column=i, padx=0, pady=0)
+
+            # The color block
+            case = tk.Frame(
+                color_container,
+                bg=hex_color,
+                width=150,   # width of each block
+                height=65,
+                bd=0,
+                relief="flat"
+            )
+            case.pack()
+
+            # The RGB label below
+            label_rgb = tk.Label(
+                color_container,
+                text=str(couleur),
+                font=font_small,
+                fg="black",
+                bg=couleur_fond_cadre,
+            )
+            label_rgb.pack(pady=4)
+
+        # Container for palette3
+        palette_frame3 = tk.Frame(cadre_couleurs, bg=couleur_fond_cadre, pady=30)
+        palette_frame3.pack(pady=0)
+
+        for i, couleur in enumerate(liste_couleurs[2]):
+            hex_color = "#%02x%02x%02x" % couleur
+
+            # Create a vertical container for the color + label
+            color_container = tk.Frame(palette_frame3, bg=couleur_fond_cadre)
             color_container.grid(row=0, column=i, padx=0, pady=0)
 
             # The color block
@@ -141,33 +211,39 @@ def choisir_couleur():
             label_rgb.pack(pady=4)
 
 
-# Titre principal
-label_titre = tk.Label(
-    fenetre,
-    text="Générateur de palettes harmonieuses",
-    font=font_title,
-    fg="blue",
-    bg=couleur_fond,
-)
-label_titre.pack(pady=10)
+header_frame = tk.Frame(fenetre, bg=couleur_fond)
+header_frame.pack(padx=10, pady=10, fill="x")
 
-# Sous-titre
-label_sous = tk.Label(
-    fenetre,
-    text="Sélectionnez une base de données et découvrez des harmonies de couleurs qui en sont inspirées",
-    font=("Segoe UI", 12, "italic"),
+label_titre = tk.Label(
+    header_frame,
+    text="HarmonIA",
+    font=font_title,
     fg="black",
     bg=couleur_fond,
 )
-label_sous.pack(pady=(0, 15))
+label_titre.grid(row=0, column=0, sticky="w", padx=(10, 20))
+
+label_sous_titre = tk.Label(
+    header_frame,
+    text="Le générateur de palettes harmonieuses",
+    font=("Bahnschrift Light", 14),
+    fg="black",
+    bg=couleur_fond,
+)
+label_sous_titre.grid(row=1, column=0, sticky="w", padx=(10, 20))
+
+
+# Conteneur pour menu + bouton
+cadre_controls = tk.Frame(fenetre, bg=couleur_fond)
+cadre_controls.pack(pady=15)
 
 # Menu déroulant
-cadre_menu = tk.Frame(fenetre, bg=couleur_fond)
-cadre_menu.pack(pady=10)
+cadre_menu = tk.Frame(cadre_controls, bg=couleur_fond)
+cadre_menu.pack(side="left", padx=(0, 100), pady=(0,15))  # marge à droite
 
 label_menu = tk.Label(
     cadre_menu,
-    text="Style artistique :",
+    text="Inspiration :",
     font=font_label,
     fg=couleur_texte,
     bg=couleur_fond,
@@ -190,7 +266,7 @@ menu.grid(row=1, column=0, pady=6, ipadx=6, ipady=4)
 
 # Bouton
 bouton = tk.Button(
-    fenetre,
+    cadre_controls,
     text="Choisir une couleur",
     font=font_label,
     command=choisir_couleur,
@@ -205,7 +281,14 @@ bouton = tk.Button(
     pady=8,
     cursor="hand2",
 )
-bouton.pack(pady=15)
+
+# Bouton à droite du menu déroulant
+bouton.config(padx=100, pady=10)  # ajustement esthétique
+bouton.pack(side="left")  # aligné à gauche dans cadre_controls
+
+
+
+#bouton.pack(pady=15)
 
 
 def on_enter(e):
