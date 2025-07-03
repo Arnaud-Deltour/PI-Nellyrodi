@@ -62,15 +62,20 @@ def affichage(rgb, style):
     input = pd.DataFrame([[hsv[0], hsv[1], hsv[2]]]).values
 
     pred = model.predict(input)[0]
-    pred_hsv = np.array(pred[:9])
+    pred_lab = np.array(pred[:9])
+    print(pred_lab)
+
+    pal_converted = np.clip(pred_lab*255,0,255).astype(int).reshape(4, 3).reshape(1, 4, 3)
+    print(pal_converted)
 
     couleurs = [
         rgb,
-        colorsys.hsv_to_rgb(*pred_hsv[0:3]),
-        colorsys.hsv_to_rgb(*pred_hsv[3:6]),
-        colorsys.hsv_to_rgb(*pred_hsv[6:9]),
+        pred_lab[0:3],
+        pred_lab[3:6],
+        pred_lab[6:9],
     ]
 
+    #couleurs = liste de 4 tuples en RGB de 0 à 255
     couleurs = [tuple(int(c * 255) for c in couleur) for couleur in couleurs]
     return len(couleurs), couleurs
 
