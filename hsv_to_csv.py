@@ -10,7 +10,7 @@ def hsv_to_csv(nom_dossier, nom_nouveau_csv):
         nouvelle_ligne = []
 
         for i in dico :
-            h_norme = dico[i][0][0]/180
+            h_norme = dico[i][0][0]/255
             s_norme = dico[i][0][1]/255
             v_norme = dico[i][0][2]/255
 
@@ -22,7 +22,7 @@ def hsv_to_csv(nom_dossier, nom_nouveau_csv):
 
 
     dataset_hsv_dir = nom_dossier
-    image_list = [cv2.imread(os.path.join(dataset_hsv_dir, file)) for file in os.listdir(dataset_hsv_dir) if file.endswith(('.jpg','.JPG'))]
+    image_list = [cv2.imread(os.path.join(dataset_hsv_dir, file)) for file in os.listdir(dataset_hsv_dir) if file.endswith(('.png','.PNG'))]
 
     with open(nom_nouveau_csv, mode='w', newline='', encoding='utf-8') as csvfile:
         writer = csv.writer(csvfile)
@@ -31,7 +31,7 @@ def hsv_to_csv(nom_dossier, nom_nouveau_csv):
 
     for image in image_list :
         # Reshape the image to a 2D array of pixels
-        dico = KMeans(n_clusters=4, max_iter=5).fit(image.reshape(-1,3))
+        dico = KMeans(n_clusters=4, demo=True, print_clusters=False).fit(image.reshape(-1, 3))
         add_to_csv(nom_nouveau_csv,dico)
 
-
+hsv_to_csv("abstract_lab", "data_abstract2")
