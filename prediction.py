@@ -44,7 +44,7 @@ y = pd.concat([y1,y2,y3,y4]).values.astype(np.float32)
 
 #X_train, X_test, y_train, y_test = train_test_split(X1, y1, test_size=0.01, random_state=103)
 X_train, y_train = X1, y1
-X_test, y_test = X1[:2], y1[:2]
+X_test, y_test = X1[25:32], y1[25:32]
 
 model = Sequential([
     Dense(16, input_dim=3, activation='relu'),
@@ -52,9 +52,9 @@ model = Sequential([
     Dense(9, activation='sigmoid')  # 3 HSV vectors = 9 values
 ])
 
-model.compile(optimizer='Adam', loss='mse', metrics=['accuracy'])
+model.compile(optimizer='SGD', loss='mse', metrics=['accuracy'])
 
-model.fit(X_train, y_train, epochs=200, verbose=1)
+model.fit(X_train, y_train, epochs=100, verbose=1)
 predictions = model.predict(X_test)
 
 
@@ -81,16 +81,16 @@ def show_input_and_palettes(inputs, predictions):
     plt.show()
 
 show_input_and_palettes(X_test, predictions)
-show_input_and_palettes(X_test, y_test)
 
-print(model.evaluate(X_test, y_test))
+#print(model.evaluate(X_test, y_test))
 
 model.save('abstract_art.keras')
 
+"""
 palettes = np.concatenate([X_train[1],y_train[1]], axis=0)
 pal = palettes*255
 pal1 = np.clip(pal,0,255).astype(int).reshape(4, 3).reshape(1, 4, 3)
 pal_lab = cv2.cvtColor(np.array(pal1, dtype=np.uint8), cv2.COLOR_LAB2RGB)
 
 plt.imshow(pal_lab)
-plt.show()
+plt.show()"""
