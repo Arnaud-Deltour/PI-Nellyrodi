@@ -4,33 +4,34 @@ from numpy import random as rd
 import matplotlib.pyplot as plt
 
 #img = cv2.imread('PI-Nellyrodi/data_hsv/impressionist_paintings/2019.jpg', cv2.IMREAD_COLOR)
-img = cv2.imread('impressionist_lab/880.png', cv2.IMREAD_COLOR)
+img = cv2.imread('abstract_lab/1.png', cv2.IMREAD_COLOR)
 #img = cv2.imread('abstract_lab/4360.png', cv2.IMREAD_COLOR)
 #img = cv2.imread('image/img.jpg', cv2.IMREAD_COLOR)
 
-def foyer(n,M):
-    '''Le but est de génerer n foyers le premier choisi au hasard, le deuxième chosi de sorte que
-    la distance soit la plus loin du premier et itération suivante la plus loin des précédents,
-    n nombre de foyers, M matrice des points'''
+def foyer(n, M):
+    '''Le but est de générer n foyers :
+    - Le premier est choisi arbitrairement (ici l’élément à l’index 500),
+    - Chaque suivant est le plus éloigné (en Lab) des foyers précédents.'''
 
     M = np.array(M)
     premier_foyer = M[500]
-    foyers = np.array(premier_foyer)# Choisir le premier foyer au hasard
+    foyers = [premier_foyer]
 
     # Distance initiale entre tous les points et le premier foyer
-    distances = np.array(distance_point(premier_foyer,point) for point in M)
+    distances = np.array([distance_point(premier_foyer, point) for point in M])
 
     for i in range(1, n):
         idx_max = np.argmax(distances)
         prochain_foyer = M[idx_max]
         foyers.append(prochain_foyer)
 
-        # Mettre à jour les distances minimales
-        new_distances = [distance_point(prochain_foyer,point) for point in M]
+        # Mettre à jour les distances minimales (par rapport à l'ensemble des foyers)
+        new_distances = np.array([distance_point(prochain_foyer, point) for point in M])
         distances = np.minimum(distances, new_distances)
 
     print("Foyers choisis :", foyers)
-    return foyers
+    return np.array(foyers)
+
 
 def hsv_distance(p1, p2):  # p1 et p2 sont des triplets de la forme [h,s,v]
     r1 = (p1[1] / 255) * (p1[2] / 255) * 3
@@ -199,7 +200,7 @@ class KMeans:
             plt.legend()
 
         plt.show()
-
+        print(dico)
         return dico
 
 """
