@@ -57,16 +57,19 @@ def moyenne(cluster):
 def dist_transform(distances):
     return distances
 
-class KMeans_demo:
-    def __init__(self, n_clusters, n_clusters_init=8, max_iter=4):
+class KMeans:
+    def __init__(self, n_clusters, n_clusters_init=8, max_iter=4, demo=False, print_clusters=False):
         self.n_clusters = n_clusters
         self.n_clusters_init = n_clusters_init
         self.max_iter = max_iter
+        self.demo = demo
+        self.print_clusters = print_clusters
 
     def fit(self, X_train):
-        # Array containing the modified image
-        modified_img = np.full_like(X_train, [255,127,127])
-        modified_img_totale = np.full_like(X_train, [255,127,127])
+        if self.demo:
+            # Array containing the modified image
+            modified_img = np.full_like(X_train, [255,127,127])
+            modified_img_totale = np.full_like(X_train, [255,127,127])
 
         # Initialize centroids using the foyer function
         self.centroids = foyer(self.n_clusters_init, X_train)
@@ -88,8 +91,9 @@ class KMeans_demo:
                 centroid_idx = argmin
 
                 sorted_points[centroid_idx].append(x)
+                if self.demo:
                 # Store the index of the point in the corresponding cluster to rebuild the image later
-                sorted_points_coord[centroid_idx].append(i)
+                    sorted_points_coord[centroid_idx].append(i)
 
             # Update centroids
             prev_centroids = self.centroids
@@ -107,9 +111,11 @@ class KMeans_demo:
             if len(cluster) > max:
                 max = len(cluster)
                 idx = i
-        idx_list = [idx] #list of already selected indexes
-        clusters.append(sorted_points[idx])  # Append the most represented cluster
-        clusters_coord.append(sorted_points_coord[idx])  # Append the corresponding coordinates
+
+        idx_list = [idx]  # List of already selected indexes
+        clusters.append(max)  # Append the number of points in the most represented cluster
+        if self.demo:
+            clusters_coord.append(sorted_points_coord[idx])  # Append the corresponding coordinates
         clusters_centroids = [self.centroids[idx]]
 
         # Select the clusters with the centroids that are the most distant from the previous ones
@@ -129,48 +135,74 @@ class KMeans_demo:
             for idx in idx_list:
                 distances_moy[idx] = 0
 
-            print("dist moy :", distances_moy)
+            #print("dist moy :", distances_moy)
 
             # On en extrait le max
             idx = np.argmax(distances_moy)
             idx_list.append(idx)
-            print("idx :", idx)
-            next_centroid = self.centroids[idx]
+            #print("idx :", idx)
 
-            clusters.append(sorted_points[idx])
-            clusters_coord.append(sorted_points_coord[idx])
-            clusters_centroids.append(next_centroid)
+            # On ajoute les points au cluster correspondant
+            clusters.append(len(sorted_points[idx]))
+            clusters_centroids.append(self.centroids[idx])
+            
+            if self.demo:
+                clusters_coord.append(sorted_points_coord[idx])
 
+
+
+        if self.demo:
         # Rebuild the whole image
-        for i, cluster in enumerate(sorted_points):
-            for idx in sorted_points_coord[i]:
-                modified_img_totale[idx] = self.centroids[i]
+            for i, cluster in enumerate(sorted_points):
+                for idx in sorted_points_coord[i]:
+                    modified_img_totale[idx] = self.centroids[i]
 
-        modified_img_totale = modified_img_totale.reshape((100, 100, 3)).astype(np.uint8)
-        plt.figure(1)
-        #plt.imshow(cv2.cvtColor(modified_img_totale, cv2.COLOR_HSV2RGB))
-        plt.imshow(cv2.cvtColor(modified_img_totale, cv2.COLOR_LAB2RGB))
+            modified_img_totale = modified_img_totale.reshape((100, 100, 3)).astype(np.uint8)
+            fig, (ax1, ax2) = plt.subplots(1, 2)
+            ax1.imshow(cv2.cvtColor(modified_img_totale, cv2.COLOR_LAB2RGB))
+            ax1.title.set_text(str(self.n_clusters_init)+' initial clusters')
 
-        self.centroids = clusters_centroids
+            # Rebuild the image with selected clusters only
+            self.centroids = clusters_centroids
+            for i, cluster in enumerate(clusters):
+                for idx in clusters_coord[i]:
+                    modified_img[idx] = self.centroids[i]
 
-        # Rebuild the image with selected clusters
-        for i, cluster in enumerate(clusters):
-            for idx in clusters_coord[i]:
-                modified_img[idx] = self.centroids[i]
 
-
-        modified_img = modified_img.reshape((100, 100, 3)).astype(np.uint8)
-        plt.figure(2)
-        plt.imshow(cv2.cvtColor(modified_img, cv2.COLOR_LAB2RGB))
+            modified_img = modified_img.reshape((100, 100, 3)).astype(np.uint8)
+            ax2.imshow(cv2.cvtColor(modified_img, cv2.COLOR_LAB2RGB))
+            ax2.title.set_text(str(self.n_clusters)+" selected clusters")
         
+        self.centroids = clusters_centroids
         print(f"Convergence après {iteration} iterations.")
+
         dico = {}
-        for i, cluster in enumerate(clusters):
-            dico[i] = [self.centroids[i], len(cluster)]
-        print("Dictionnaire des clusters:", dico)
+        for i in range (len(clusters)):
+            dico[i] = [self.centroids[i], clusters[i]]
+        
+
+        if self.print_clusters:
+            print("Dictionnaire des clusters:", dico)
+            #convert the clusters from LAB to RGB
+            for i, (centroid, population) in dico.items():
+                centroid = np.clip(centroid, 0, 255).astype(int)
+                #kmeans[i] = (cv2.cvtColor(np.array([[centroid]], dtype=np.uint8), cv2.COLOR_HSV2RGB)[0][0], population)
+                dico[i] = (cv2.cvtColor(np.array([[centroid]], dtype=np.uint8), cv2.COLOR_LAB2RGB)[0][0], population)
+
+            #   Plot the clusters
+            plt.figure(figsize=(10, 5))
+            for i, (centroid, population) in dico.items():
+                plt.bar(i, population, color=centroid / 255, label=f'Cluster {i} (Population: {population})')
+            plt.xlabel('Clusters')
+            plt.ylabel('Population')
+            plt.title('Population of Clusters')
+            plt.legend()
+
+        plt.show()
+
         return dico
 
-
+"""
 class KMeans:
     def __init__(self, n_clusters, n_clusters_init=8, max_iter=4):
         self.n_clusters = n_clusters
@@ -252,22 +284,7 @@ class KMeans:
         
         return dico
 
-#print(img.reshape(-1, 3).shape)  # Reshape the image to a 2D array of pixels
-kmeans = KMeans_demo(n_clusters=4).fit(img.reshape(-1, 3))
+        """
 
-#convert the clusters from HSV to RGB
-for i, (centroid, population) in kmeans.items():
-    centroid = np.clip(centroid, 0, 255).astype(int)
-    #kmeans[i] = (cv2.cvtColor(np.array([[centroid]], dtype=np.uint8), cv2.COLOR_HSV2RGB)[0][0], population)
-    kmeans[i] = (cv2.cvtColor(np.array([[centroid]], dtype=np.uint8), cv2.COLOR_LAB2RGB)[0][0], population)
-
-#Plot the clusters
-plt.figure(figsize=(10, 5))
-for i, (centroid, population) in kmeans.items():
-    plt.bar(i, population, color=centroid / 255, label=f'Cluster {i} (Population: {population})')
-plt.xlabel('Cluster')
-plt.ylabel('Population')
-plt.title('Population of Clusters')
-plt.legend()
-plt.show()
+kmeans = KMeans(n_clusters=4, demo=True, print_clusters=False).fit(img.reshape(-1, 3))
 
