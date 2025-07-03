@@ -4,6 +4,7 @@ from tensorflow.keras.models import load_model
 import numpy as np
 import colorsys
 import pandas as pd
+import cv2
 
 # Mapping des styles à leurs fichiers modèles
 model_paths = {
@@ -63,20 +64,21 @@ def affichage(rgb, style):
 
     pred = model.predict(input)[0]
     pred_lab = np.array(pred[:9])
-    print(pred_lab)
 
-    pal_converted = np.clip(pred_lab*255,0,255).astype(int).reshape(4, 3).reshape(1, 4, 3)
-    print(pal_converted)
+    pal_converting = np.clip(pred_lab*255,0,255).astype(int)
+    pal_converting = np.array([np.array([pal_converting[0:3],pal_converting[3:6],pal_converting[6:9]])])
+    pal_converted = cv2.cvtColor(np.array(pal_converting, dtype=np.uint8), cv2.COLOR_LAB2RGB)
 
     couleurs = [
         rgb,
-        pred_lab[0:3],
-        pred_lab[3:6],
-        pred_lab[6:9],
+        pal_converted[0][0],
+        pal_converted[0][1],
+        pal_converted[0][2],
     ]
 
     #couleurs = liste de 4 tuples en RGB de 0 à 255
-    couleurs = [tuple(int(c * 255) for c in couleur) for couleur in couleurs]
+    couleurs = [tuple(int(c) for c in couleur) for couleur in couleurs]
+    print("Couleurs post tuple : ",couleurs)
     return len(couleurs), couleurs
 
 
