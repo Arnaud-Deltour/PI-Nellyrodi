@@ -16,14 +16,14 @@ i = 0
 for image_path in image_list:
     img = cv2.imread(image_path)
 
-    # Convertir en HSV
-    hsv_img = cv2.cvtColor(img, cv2.COLOR_BGR2LAB)
+    # Convertir en LAB
+    lab_img = cv2.cvtColor(img, cv2.COLOR_BGR2LAB)
 
     # Extraire nom de fichier proprement
     name = os.path.basename(image_path)
 
-    # Sauvegarder l'image HSV
-    cv2.imwrite(os.path.join(dataset_hsv_dir, name), hsv_img)
+    # Sauvegarder l'image LAB
+    cv2.imwrite(os.path.join(dataset_hsv_dir, name), lab_img)
     i += 1
 
 print(f"Conversion terminée pour {i} images")
