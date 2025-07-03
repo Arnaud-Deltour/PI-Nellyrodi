@@ -4,7 +4,7 @@ from numpy import random as rd
 import matplotlib.pyplot as plt
 
 #img = cv2.imread('PI-Nellyrodi/data_hsv/impressionist_paintings/2019.jpg', cv2.IMREAD_COLOR)
-img = cv2.imread('impressionist_lab/860.png', cv2.IMREAD_COLOR)
+img = cv2.imread('impressionist_lab/880.png', cv2.IMREAD_COLOR)
 #img = cv2.imread('abstract_lab/4360.png', cv2.IMREAD_COLOR)
 #img = cv2.imread('image/img.jpg', cv2.IMREAD_COLOR)
 
@@ -121,7 +121,7 @@ class KMeans:
                 #distances.append(np.array([hsv_distance(new_centroid, centroid) for centroid in self.centroids]))
                 distances.append(np.array([distance_point(new_centroid, centroid) for centroid in self.centroids]))
             #On fait ensuite la moyenne des sous-tableaux de distances
-            print(distances)
+            #print(distances)
 
             distances = np.array(distances)
             distances = dist_transform(distances)
@@ -282,5 +282,5 @@ class KMeans:
 
         """
 
-kmeans = KMeans(n_clusters=4, demo=True, print_clusters=False).fit(img.reshape(-1, 3))
+kmeans = KMeans(n_clusters=4, demo=False, print_clusters=True).fit(img.reshape(-1, 3))
 
