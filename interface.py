@@ -16,7 +16,7 @@ models = {}
 fenetre = tk.Tk()
 fenetre.title("Sélecteur de couleurs artistiques")
 fenetre.geometry("1000x700")
-fenetre.configure(bg="#202124")
+fenetre.configure(bg="#d9d9d9")
 
 styles = list(model_paths.keys())
 style_selectionne = tk.StringVar(value="")
@@ -25,9 +25,9 @@ style_selectionne = tk.StringVar(value="")
 font_title = ("Segoe UI", 20, "bold")
 font_label = ("Segoe UI", 13)
 font_small = ("Segoe UI", 10)
-couleur_fond = "#202124"
-couleur_fond_cadre = "#2c2f33"
-couleur_texte = "#e8eaed"
+couleur_fond = "#d9d9d9"
+couleur_fond_cadre = "#d9d9d9"
+couleur_texte = "black"
 couleur_accent = "#8ab4f8"
 couleur_bouton = "#1a73e8"
 couleur_bouton_hover = "#1967d2"
@@ -114,7 +114,7 @@ def choisir_couleur():
             cadre_choisie,
             text="Couleur choisie",
             font=font_label,
-            fg=couleur_texte,
+            fg="white",
             bg=couleur_fond_cadre,
         )
         label.pack(pady=(0, 6))
@@ -174,7 +174,7 @@ label_titre = tk.Label(
     fenetre,
     text="Générateur de palettes harmonieuses",
     font=font_title,
-    fg=couleur_accent,
+    fg="blue",
     bg=couleur_fond,
 )
 label_titre.pack(pady=10)
@@ -184,7 +184,7 @@ label_sous = tk.Label(
     fenetre,
     text="Sélectionnez un style artistique et découvrez des harmonies de couleurs inspirées",
     font=("Segoe UI", 12, "italic"),
-    fg="#bbbbbb",
+    fg="black",
     bg=couleur_fond,
 )
 label_sous.pack(pady=(0, 15))
