@@ -4,7 +4,7 @@ from numpy import random as rd
 import matplotlib.pyplot as plt
 
 #img = cv2.imread('PI-Nellyrodi/data_hsv/impressionist_paintings/2019.jpg', cv2.IMREAD_COLOR)
-img = cv2.imread('impressionist_lab/860.png', cv2.IMREAD_COLOR)
+img = cv2.imread('impressionist_lab/880.png', cv2.IMREAD_COLOR)
 #img = cv2.imread('abstract_lab/4360.png', cv2.IMREAD_COLOR)
 #img = cv2.imread('image/img.jpg', cv2.IMREAD_COLOR)
 
@@ -13,20 +13,24 @@ def foyer(n,M):
     la distance soit la plus loin du premier et itération suivante la plus loin des précédents,
     n nombre de foyers, M matrice des points'''
 
-    foyers = []
-    l = rd.randint(M.shape[0])
+    M = np.array(M)
+    premier_foyer = M[500]
+    foyers = np.array(premier_foyer)# Choisir le premier foyer au hasard
 
-    premier_foyer = M[l] # Choisir le premier foyer au hasard
-    foyers.append(premier_foyer)
+    # Distance initiale entre tous les points et le premier foyer
+    distances = np.array(distance_point(premier_foyer,point) for point in M)
 
     for i in range(1, n):
-        #distances = np.array([min([hsv_distance(point, f) for f in foyers]) for point in M])
-        distances = np.array([min([distance_point(point, f) for f in foyers]) for point in M])
-        prochain_foyer = M[np.argmax(distances)]
-
+        idx_max = np.argmax(distances)
+        prochain_foyer = M[idx_max]
         foyers.append(prochain_foyer)
+
+        # Mettre à jour les distances minimales
+        new_distances = [distance_point(prochain_foyer,point) for point in M]
+        distances = np.minimum(distances, new_distances)
+
     print("Foyers choisis :", foyers)
-    return np.array(foyers)
+    return foyers
 
 def hsv_distance(p1, p2):  # p1 et p2 sont des triplets de la forme [h,s,v]
     r1 = (p1[1] / 255) * (p1[2] / 255) * 3
@@ -121,7 +125,7 @@ class KMeans:
                 #distances.append(np.array([hsv_distance(new_centroid, centroid) for centroid in self.centroids]))
                 distances.append(np.array([distance_point(new_centroid, centroid) for centroid in self.centroids]))
             #On fait ensuite la moyenne des sous-tableaux de distances
-            print(distances)
+            #print(distances)
 
             distances = np.array(distances)
             distances = dist_transform(distances)
@@ -282,5 +286,5 @@ class KMeans:
 
         """
 
-kmeans = KMeans(n_clusters=4, demo=True, print_clusters=False).fit(img.reshape(-1, 3))
+kmeans = KMeans(n_clusters=4, demo=False, print_clusters=True).fit(img.reshape(-1, 3))
 
