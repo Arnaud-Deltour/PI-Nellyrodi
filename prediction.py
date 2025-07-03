@@ -8,7 +8,7 @@ import cv2
 
 # Load CSV
 #df = pd.read_csv("generated_color_palette_dataset.csv")
-df = pd.read_csv("data_abstract2.csv")
+df = pd.read_csv("data_abstract_final.csv")
 
 X1 = df.drop(columns=['col2_h', 'col2_s', 'col2_v',
      'col3_h', 'col3_s', 'col3_v',
@@ -56,6 +56,8 @@ model = Sequential([
     Dense(64, input_dim=3, activation='relu'),
     Dense(128, activation='relu'),
     Dense(256, activation='relu'),
+    Dense(512, activation='relu'),
+    Dense(512, activation='relu'),
     Dense(256, activation='relu'),
     #Dropout(0.2),
     Dense(128, activation='relu'),
