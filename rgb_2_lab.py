@@ -1,8 +1,10 @@
 import cv2
 import os
 
-dataset_dir = 'abstract_compressed'
-dataset_hsv_dir = 'abstract_lab'
+#dataset_dir = 'abstract_compressed'
+#dataset_hsv_dir = 'abstract_lab'
+dataset_dir = 'impressionist_compressed'
+dataset_hsv_dir = 'impressionist_lab'
 
 # Créer dossier de sortie s'il n'existe pas
 os.makedirs(dataset_hsv_dir, exist_ok=True)
