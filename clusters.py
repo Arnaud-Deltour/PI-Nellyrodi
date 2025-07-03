@@ -189,9 +189,9 @@ class KMeans:
             
             #convert the clusters from LAB to RGB
             for i, (centroid, population) in dico.items():
-                centroid = np.clip(centroid, 0, 255).astype(int)
+                rgb_centroid = np.clip(centroid, 0, 255).astype(int)
                 #kmeans[i] = (cv2.cvtColor(np.array([[centroid]], dtype=np.uint8), cv2.COLOR_HSV2RGB)[0][0], population)
-                rgb_dico[i] = (cv2.cvtColor(np.array([[centroid]], dtype=np.uint8), cv2.COLOR_LAB2RGB)[0][0], population)
+                rgb_dico[i] = (cv2.cvtColor(np.array([[rgb_centroid]], dtype=np.uint8), cv2.COLOR_LAB2RGB)[0][0], population)
 
             #   Plot the clusters
             plt.figure(figsize=(10, 5))
@@ -203,7 +203,6 @@ class KMeans:
             plt.legend()
 
         plt.show()
-        #print(dico)
         return dico
 
 """
