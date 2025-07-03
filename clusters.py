@@ -4,7 +4,7 @@ from numpy import random as rd
 import matplotlib.pyplot as plt
 
 #img = cv2.imread('PI-Nellyrodi/data_hsv/impressionist_paintings/2019.jpg', cv2.IMREAD_COLOR)
-img = cv2.imread('abstract_lab/1.png', cv2.IMREAD_COLOR)
+img = cv2.imread('abstract_lab/88.png', cv2.IMREAD_COLOR)
 #img = cv2.imread('abstract_lab/4360.png', cv2.IMREAD_COLOR)
 #img = cv2.imread('image/img.jpg', cv2.IMREAD_COLOR)
 
@@ -32,19 +32,6 @@ def foyer(n, M):
     print("Foyers choisis :", foyers)
     return np.array(foyers)
 
-
-def hsv_distance(p1, p2):  # p1 et p2 sont des triplets de la forme [h,s,v]
-    r1 = (p1[1] / 255) * (p1[2] / 255) * 3
-    theta1 = (p1[0] / 180) * 2 * np.pi
-    z1 = (p1[2] / 255 - 1)
-    x1 = r1 * np.cos(theta1)
-    y1 = r1 * np.sin(theta1)
-    r2 = (p2[1] / 255) * (p2[2] / 255) * 3
-    theta2 = (p2[0] / 180) * 2 * np.pi
-    z2 = (p2[2] / 255 - 1)
-    x2 = r2 * np.cos(theta2)
-    y2 = r2 * np.sin(theta2)
-    return np.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2 + (z1 - z2) ** 2)
 
 def distance_point(c_1, c_2):
     return np.linalg.norm(c_1 - c_2)
@@ -204,90 +191,6 @@ class KMeans:
 
         plt.show()
         return dico
-
-"""
-class KMeans:
-    def __init__(self, n_clusters, n_clusters_init=8, max_iter=4):
-        self.n_clusters = n_clusters
-        self.n_clusters_init = n_clusters_init
-        self.max_iter = max_iter
-
-    def fit(self, X_train):
-
-        # Initialize centroids using the foyer function
-        self.centroids = foyer(self.n_clusters_init, X_train)
-
-        # Iterate until convergence or max iterations
-        iteration = 0
-        prev_centroids = None
-        while iteration < self.max_iter and np.not_equal(self.centroids, prev_centroids).any() :
-            # Assign points to nearest centroid
-            sorted_points = [[] for _ in range(self.n_clusters_init)]
-            sorted_points_coord = [[] for _ in range(self.n_clusters_init)]
-            for i,x in enumerate(X_train):
-                dists = []
-                # Calculate distances to each centroid
-                for center in self.centroids:
-                    #dists.append(hsv_distance(x, center))
-                    dists.append(distance_point(x, center))
-                centroid_idx = np.argmin(dists)
-
-                sorted_points[centroid_idx].append(x)
-                # Store the index of the point in the corresponding cluster to rebuild the image later
-                sorted_points_coord[centroid_idx].append(i)
-
-            # Update centroids
-            prev_centroids = self.centroids
-            self.centroids = np.array([moyenne(cluster) for cluster in sorted_points])          
-            iteration += 1
-        
-        clusters = []
-
-        # Select 4 clusters with different colors
-        # Select the most represented cluster for first one
-        max = 0
-        for i, cluster in enumerate(sorted_points):
-            if len(cluster) > max:
-                max = len(cluster)
-                idx = i
-
-        clusters.append(max)  # Append the number of points in the most represented cluster
-        clusters_centroids = [self.centroids[idx]]
-
-        # Select the clusters with the centroids that are the most distant from the previous ones
-
-        idx_list = [idx] #list of already selected indexes
-
-        for _ in range(self.n_clusters - 1):
-            distances = []
-            for new_centroid in clusters_centroids:
-                #distances.append(np.array([hsv_distance(new_centroid, centroid) for centroid in self.centroids]))
-                distances.append(np.array([distance_point(new_centroid, centroid) for centroid in self.centroids]))
-            #On fait ensuite la moyenne des sous-tableaux de distances
-
-            distances = dist_transform(np.array(distances))
-            distances_moy = np.mean(np.array(distances), axis=0)
-
-            for idx in idx_list:
-                distances_moy[idx] = 0
-
-            # On en extrait le max
-            idx = np.argmax(distances_moy)
-            idx_list.append(idx)
-
-            # On ajoute les points au cluster correspondant
-            clusters.append(len(sorted_points[idx]))
-            clusters_centroids.append(self.centroids[idx])
-
-        self.centroids = clusters_centroids
-        
-        dico = {}
-        for i in range (len(clusters)):
-            dico[i] = [self.centroids[i], clusters[i]]
-        
-        return dico
-
-        """
 
 kmeans = KMeans(n_clusters=4, demo=True, print_clusters=True).fit(img.reshape(-1, 3))
 
