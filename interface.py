@@ -8,9 +8,8 @@ import cv2
 
 # Mapping des styles à leurs fichiers modèles
 model_paths = {
-    "Art impressioniste": ["impressionist_paintings1.keras","impressionist_paintings2.keras","impressionist_paintings3.keras"],
-    "Art abstrait": ["abstract_art1.keras","abstract_art2.keras","abstract_art3.keras"]}
-models = {"Art impressioniste":"","Art abstrait":""}
+    "Art impressioniste": ["./impressionist_paintings1.keras","./impressionist_paintings2.keras","./impressionist_paintings3.keras"],
+    "Art abstrait": ["./abstract_art1.keras","./abstract_art2.keras","./abstract_art3.keras"]}
 
 fenetre = tk.Tk()
 fenetre.title("HarmonIA - Générateur de palettes de couleurs")
