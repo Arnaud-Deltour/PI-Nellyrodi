@@ -1,7 +1,6 @@
 import numpy as np
 from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Dense, Dropout
-from sklearn.model_selection import train_test_split
+from tensorflow.keras.layers import Dense
 import matplotlib.pyplot as plt
 import pandas as pd
 import cv2
