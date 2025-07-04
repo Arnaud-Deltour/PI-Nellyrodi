@@ -49,25 +49,25 @@ Pour générer un fichier `.csv` contenant des palettes de couleurs à partir d�
 
 Utilisez le script `compression.py` -> pour cela il faut remplir : 
 
-```python
-7 dossier_where_images_dir = ...
-8 new_dataset_name = ...
+   ```python
+   7 dossier_where_images_dir = ...
+   8 new_dataset_name = ...
 
 ### 2. Convertir les images compressées en espace LAB
 
 Utilisez le script `rgb_2_lab.py`-> pour cela il faut remplir :
 
-```python
-4 dataset_dir = ...
-5 dataset_lab_dir = ...
+   ```python
+   4 dataset_dir = ...
+   5 dataset_lab_dir = ...
 
 ### 3. Extraire les palettes et les enregistrer dans un fichier CSV
 
 Utilisez le script `rgb_2_lab.py`-> pour cela il faut appeler :
 
-```python
-6 dir_dossier = "data/abstract_lab"
-7 dir_nouveau_csv = "data/data_abstract_final.csv"
+   ```python
+   6 dir_dossier = "data/abstract_lab"
+   7 dir_nouveau_csv = "data/data_abstract_final.csv"
 
 ---
 
