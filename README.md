@@ -69,8 +69,8 @@ Utilisez le script `rgb_2_lab.py`-> pour cela il faut remplir :
 Utilisez le script `rgb_2_lab.py`-> pour cela il faut appeler :
 
    ```python
-   6 dir_dossier = "data/abstract_lab"
-   7 dir_nouveau_csv = "data/data_abstract_final.csv"
+   6 dir_dossier = ...
+   7 dir_nouveau_csv = ...
    ```
 
 ---
