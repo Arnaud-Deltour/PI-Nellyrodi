@@ -22,7 +22,6 @@ Permettre aux utilisateurs de créer ou explorer des palettes de couleurs inspir
 - Donnée d’entrée : une couleur (choisie via colorpicker).
 - En sortie : trois palettes de couleurs générées (1 couleur choisie + 3 suggestions), avec des **proportions calculées** selon la proximité dans l’espace colorimétrique.
 
----
 
 ### 2. Recherche de la palette la plus proche
 
