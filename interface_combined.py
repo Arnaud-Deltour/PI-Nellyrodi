@@ -10,16 +10,28 @@ color_w = 700
 
 # Mapping des styles à leurs fichiers modèles
 model_paths = {
-    "Art impressioniste": ["impressionist_paintings1.keras","impressionist_paintings2.keras","impressionist_paintings3.keras"],
-    "Art abstrait": ["abstract_art1.keras","abstract_art2.keras","abstract_art3.keras"]}
-models = {"Art impressioniste":"","Art abstrait":""}
-csv_paths = {"Art impressioniste":"data_impressionist.csv","Art abstrait":"data_abstract_final.csv"}
+    "Art impressioniste": [
+        "modele/impressionist_paintings1.keras",
+        "modele/impressionist_paintings2.keras",
+        "modele/impressionist_paintings3.keras",
+    ],
+    "Art abstrait": [
+        "modele/abstract_art1.keras",
+        "modele/abstract_art2.keras",
+        "modele/abstract_art3.keras",
+    ],
+}
+models = {"Art impressioniste": "", "Art abstrait": ""}
+csv_paths = {
+    "Art impressioniste": "data/data_impressionist.csv",
+    "Art abstrait": "data/data_abstract_final.csv",
+}
 
 fenetre = tk.Tk()
 fenetre.title("HarmonIA - Générateur de palettes de couleurs")
 fenetre.geometry(f"{fenetre.winfo_screenwidth()}x{fenetre.winfo_screenheight()}")
 fenetre.state("zoomed")  # Fonctionne sous Windows
-#fenetre.attributes('-fullscreen', True)
+# fenetre.attributes('-fullscreen', True)
 fenetre.configure(bg="#ffffff")
 
 styles = list(model_paths.keys())
@@ -38,31 +50,35 @@ couleur_texte = "black"
 couleur_bouton = "#626262"
 couleur_bouton_hover = "#181818"
 
+
 def distance_point(c_1, c_2):
     return np.linalg.norm(np.array(c_1) - np.array(c_2))
 
-#Détermine la couleur d'affichage du texte
+
+# Détermine la couleur d'affichage du texte
 def texte_contraste(rgb):
     luminance = (0.299 * rgb[0] + 0.587 * rgb[1] + 0.114 * rgb[2]) / 255
     return "#000000" if luminance > 0.5 else "#ffffff"
 
+
 def color_width(input, pal_sep):
     """returns the proportions in width of each color block"""
-    #distances = [[distance_point(input, prediction),i] for (i,prediction) in enumerate(pred_lab)]
+    # distances = [[distance_point(input, prediction),i] for (i,prediction) in enumerate(pred_lab)]
     pal_sep = pal_sep[0]
     print(pal_sep)
     distances = np.array([distance_point(input, prediction) for prediction in pal_sep])
     print("Dist :", distances)
-    inv_distances = 1/distances
+    inv_distances = 1 / distances
     sum = np.sum(inv_distances)
 
     max_inv = np.max(inv_distances)
     inv_distances = np.concatenate([np.array([max_inv]), inv_distances])
     sum += max_inv
-    print("Somme :",sum)
-    print("Prop :",inv_distances/sum)
+    print("Somme :", sum)
+    print("Prop :", inv_distances / sum)
 
-    return inv_distances/sum
+    return inv_distances / sum
+
 
 # Récupère les couleurs issues de la prédiction par le perceptron
 def get_colors(rgb, style):
@@ -76,24 +92,30 @@ def get_colors(rgb, style):
 
     pred1 = model1.predict(input)[0]
     pred_lab1 = np.array(pred1[:9])
-    pal_sep1 = np.array([np.array([pred_lab1[0:3],pred_lab1[3:6],pred_lab1[6:9]])])
-    pal_converting1 = np.clip(pal_sep1*255,0,255).astype(int)
-    pal_converted1 = cv2.cvtColor(np.array(pal_converting1, dtype=np.uint8), cv2.COLOR_LAB2RGB)
-    proportions1 = color_width(input,pal_sep1)
+    pal_sep1 = np.array([np.array([pred_lab1[0:3], pred_lab1[3:6], pred_lab1[6:9]])])
+    pal_converting1 = np.clip(pal_sep1 * 255, 0, 255).astype(int)
+    pal_converted1 = cv2.cvtColor(
+        np.array(pal_converting1, dtype=np.uint8), cv2.COLOR_LAB2RGB
+    )
+    proportions1 = color_width(input, pal_sep1)
 
     pred2 = model2.predict(input)[0]
     pred_lab2 = np.array(pred2[:9])
-    pal_sep2 = np.array([np.array([pred_lab2[0:3],pred_lab2[3:6],pred_lab2[6:9]])])
-    pal_converting2 = np.clip(pal_sep2*255,0,255).astype(int)
-    pal_converted2 = cv2.cvtColor(np.array(pal_converting2, dtype=np.uint8), cv2.COLOR_LAB2RGB)
-    proportions2 = color_width(input,pal_sep2)
+    pal_sep2 = np.array([np.array([pred_lab2[0:3], pred_lab2[3:6], pred_lab2[6:9]])])
+    pal_converting2 = np.clip(pal_sep2 * 255, 0, 255).astype(int)
+    pal_converted2 = cv2.cvtColor(
+        np.array(pal_converting2, dtype=np.uint8), cv2.COLOR_LAB2RGB
+    )
+    proportions2 = color_width(input, pal_sep2)
 
     pred3 = model3.predict(input)[0]
     pred_lab3 = np.array(pred3[:9])
-    pal_sep3 = np.array([np.array([pred_lab3[0:3],pred_lab3[3:6],pred_lab3[6:9]])])
-    pal_converting3 = np.clip(pal_sep3*255,0,255).astype(int)
-    pal_converted3 = cv2.cvtColor(np.array(pal_converting3, dtype=np.uint8), cv2.COLOR_LAB2RGB)
-    proportions3 = color_width(input,pal_sep3)
+    pal_sep3 = np.array([np.array([pred_lab3[0:3], pred_lab3[3:6], pred_lab3[6:9]])])
+    pal_converting3 = np.clip(pal_sep3 * 255, 0, 255).astype(int)
+    pal_converted3 = cv2.cvtColor(
+        np.array(pal_converting3, dtype=np.uint8), cv2.COLOR_LAB2RGB
+    )
+    proportions3 = color_width(input, pal_sep3)
 
     # Couleurs à afficher
     couleurs1 = [
@@ -115,11 +137,11 @@ def get_colors(rgb, style):
         pal_converted3[0][2],
     ]
 
-    #couleurs = liste de 4 tuples en RGB de 0 à 255
+    # couleurs = liste de 4 tuples en RGB de 0 à 255
     couleurs1 = [tuple(int(c) for c in couleur) for couleur in couleurs1]
     couleurs2 = [tuple(int(c) for c in couleur) for couleur in couleurs2]
     couleurs3 = [tuple(int(c) for c in couleur) for couleur in couleurs3]
-    #print("Couleurs post tuple : ",couleurs)
+    # print("Couleurs post tuple : ",couleurs)
     return [couleurs1, couleurs2, couleurs3, proportions1, proportions2, proportions3]
 
 
@@ -130,15 +152,16 @@ def activer_bouton(*args):
     else:
         bouton.config(state="disabled")
 
+
 def afficher_pred_type(*args):
     val = pred_selectionnee.get()
+
 
 def choisir_couleur():
     if style_selectionne.get() not in styles:
         return None
-    
-    if pred_selectionnee.get() == "Plus proche palette":
 
+    if pred_selectionnee.get() == "Plus proche palette":
         df = pd.read_csv(csv_paths[style_selectionne.get()])
         df = df * 255  # Passage à l'échelle 0-255
         n_palettes = len(df)
@@ -146,23 +169,27 @@ def choisir_couleur():
         all_colors = palettes.reshape((-1, 3))  # toutes les couleurs
 
         def affichage(rgb):
-            lab = cv2.cvtColor(np.array([[rgb]], dtype=np.uint8), cv2.COLOR_RGB2LAB)[0][0]
+            lab = cv2.cvtColor(np.array([[rgb]], dtype=np.uint8), cv2.COLOR_RGB2LAB)[0][
+                0
+            ]
             R = 45  # rayon tolérance
-            
+
             liste_pred = find_palettes_from_color(lab, R, 6)
-            
+
             if not liste_pred:
                 return 0, []
-            
+
             toutes_palettes_rgb = []
             for pred in liste_pred:
                 # Convertir palette LAB [4,3] en RGB [4,3]
                 pal_converting = np.clip(pred, 0, 255).astype(np.uint8)
                 pal_converting = np.array([pal_converting])
                 pal_converted = cv2.cvtColor(pal_converting, cv2.COLOR_LAB2RGB)[0]
-                
+
                 # convertir en tuples RGB entiers
-                palette_rgb = [tuple(int(c) for c in couleur) for couleur in pal_converted]
+                palette_rgb = [
+                    tuple(int(c) for c in couleur) for couleur in pal_converted
+                ]
                 toutes_palettes_rgb.append(palette_rgb)
 
             # Liste finale de palettes RGB (liste de listes de tuples RGB)
@@ -175,24 +202,26 @@ def choisir_couleur():
                 if dist <= R:
                     idx_palette = i // 4
                     palettes_proches.append((idx_palette, dist))
-            
+
             # On élimine les doublons en gardant la distance minimale pour chaque palette
             dist_min_par_palette = {}
             for idx, dist in palettes_proches:
                 if idx not in dist_min_par_palette or dist < dist_min_par_palette[idx]:
                     dist_min_par_palette[idx] = dist
-            
+
             # On trie par distance croissante
             palettes_tries = sorted(dist_min_par_palette.items(), key=lambda x: x[1])
-            
+
             # On récupère les palettes triées, limité à n palettes
-            palettes_selectionnees = [tuple(map(tuple, palettes[idx])) for idx, _ in palettes_tries[:n]]
-            
+            palettes_selectionnees = [
+                tuple(map(tuple, palettes[idx])) for idx, _ in palettes_tries[:n]
+            ]
+
             if len(palettes_selectionnees) == 0:
                 return None
             else:
                 return [np.array(p) for p in palettes_selectionnees]
-        
+
         result = colorchooser.askcolor(title="Choisissez une couleur")
         rgb = result[0]
 
@@ -204,15 +233,29 @@ def choisir_couleur():
             n, liste_palettes = affichage(rgb_tuple)
 
             if n == 0:
-                label_aucune = tk.Label(cadre_couleurs, text="Aucune palette trouvée", font=font_label, background=couleur_fond_cadre, fg="black")
+                label_aucune = tk.Label(
+                    cadre_couleurs,
+                    text="Aucune palette trouvée",
+                    font=font_label,
+                    background=couleur_fond_cadre,
+                    fg="black",
+                )
                 label_aucune.pack()
                 return
 
             # Affichage couleur choisie
-            cadre_choisie = tk.Frame(cadre_couleurs, bg=couleur_fond_cadre, bd=2, padx=100, pady=10)
+            cadre_choisie = tk.Frame(
+                cadre_couleurs, bg=couleur_fond_cadre, bd=2, padx=100, pady=10
+            )
             cadre_choisie.pack(side="left", padx=10, pady=10)
 
-            label = tk.Label(cadre_choisie, text="Couleur choisie", font=font_label, fg="white", bg=couleur_fond_cadre)
+            label = tk.Label(
+                cadre_choisie,
+                text="Couleur choisie",
+                font=font_label,
+                fg="white",
+                bg=couleur_fond_cadre,
+            )
             label.pack(pady=(0, 6))
 
             hex_color = "#%02x%02x%02x" % rgb_tuple
@@ -229,12 +272,17 @@ def choisir_couleur():
                     case = tk.Frame(cadre, bg=hex_color, width=90, height=100)
                     case.pack(pady=0)
 
-                    label_rgb = tk.Label(case, text=str(couleur), font=font_small, fg=texte_contraste(couleur), bg=hex_color)
+                    label_rgb = tk.Label(
+                        case,
+                        text=str(couleur),
+                        font=font_small,
+                        fg=texte_contraste(couleur),
+                        bg=hex_color,
+                    )
                     label_rgb.place(relx=0.5, rely=0.5, anchor="center")
 
-
     # Si on a choisi le réseau de neurones
-    if pred_selectionnee.get() == "Réseau de neurones" :
+    if pred_selectionnee.get() == "Réseau de neurones":
         result = colorchooser.askcolor(title="Choisissez une couleur")
         input_rgb = result[0]
 
@@ -263,10 +311,10 @@ def choisir_couleur():
                 case = tk.Frame(
                     color_container,
                     bg=hex_color,
-                    width=color_w*liste_prop[0][i],   # width of each block
+                    width=color_w * liste_prop[0][i],  # width of each block
                     height=65,
                     bd=0,
-                    relief="flat"
+                    relief="flat",
                 )
                 case.pack()
 
@@ -295,10 +343,10 @@ def choisir_couleur():
                 case = tk.Frame(
                     color_container,
                     bg=hex_color,
-                    width=color_w*liste_prop[1][i],   # width of each block
+                    width=color_w * liste_prop[1][i],  # width of each block
                     height=65,
                     bd=0,
-                    relief="flat"
+                    relief="flat",
                 )
                 case.pack()
 
@@ -327,10 +375,10 @@ def choisir_couleur():
                 case = tk.Frame(
                     color_container,
                     bg=hex_color,
-                    width=color_w*liste_prop[2][i],   # width of each block
+                    width=color_w * liste_prop[2][i],  # width of each block
                     height=65,
                     bd=0,
-                    relief="flat"
+                    relief="flat",
                 )
                 case.pack()
 
@@ -373,7 +421,7 @@ cadre_controls.pack(pady=15)
 
 # Menu déroulant pred
 cadre_menu_pred = tk.Frame(cadre_controls, bg=couleur_fond)
-cadre_menu_pred.pack(side="left", padx=(0, 100), pady=(0,15))  # marge à droite
+cadre_menu_pred.pack(side="left", padx=(0, 100), pady=(0, 15))  # marge à droite
 
 label_menu_pred = tk.Label(
     cadre_menu_pred,
@@ -401,7 +449,7 @@ menu.grid(row=1, column=0, pady=6, ipadx=6, ipady=4)
 
 # Menu déroulant styles
 cadre_menu_styles = tk.Frame(cadre_controls, bg=couleur_fond)
-cadre_menu_styles.pack(side="left", padx=(0, 100), pady=(0,15))  # marge à droite
+cadre_menu_styles.pack(side="left", padx=(0, 100), pady=(0, 15))  # marge à droite
 
 label_menu = tk.Label(
     cadre_menu_styles,
@@ -449,8 +497,7 @@ bouton.config(padx=100, pady=10)  # ajustement esthétique
 bouton.pack(side="left")  # aligné à gauche dans cadre_controls
 
 
-
-#bouton.pack(pady=15)
+# bouton.pack(pady=15)
 
 
 def on_enter(e):
