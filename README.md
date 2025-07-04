@@ -13,6 +13,34 @@ Permettre aux utilisateurs de créer ou explorer des palettes de couleurs inspir
 
 ---
 
+## Dépendances
+
+Le projet nécessite les bibliothèques Python suivantes :
+
+- `tkinter` 
+- `matplotlib` 
+- `pandas`  
+- `numpy`  
+- `tensorflow.keras`  
+- `dataset`
+- `opencv-python`
+- `colorsys`
+- `cv2`  
+
+---
+
+## Faire fonctionner l'interface 
+
+1. **Assurez-vous que toutes les dépendances sont installées** (voir section [Dépendances](#-dépendances)).
+
+2. **Lancez le script principal :**
+
+   ```bash
+   python interface_combined.py
+
+
+---
+
 ## Deux modes de génération
 
 ### 1. IA par réseau de neurones
