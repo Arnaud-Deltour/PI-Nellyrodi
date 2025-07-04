@@ -34,4 +34,4 @@ def lab_to_csv(nom_dossier, nom_nouveau_csv):
         dico = KMeans(n_clusters=4, demo=False, print_clusters=False).fit(image.reshape(-1, 3))
         add_to_csv(nom_nouveau_csv,dico)
 
-lab_to_csv("abstract_lab", "data_abstract_final.csv")
+lab_to_csv("data/abstract_lab", "data/data_abstract_final.csv")
