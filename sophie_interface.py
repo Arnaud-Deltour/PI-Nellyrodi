@@ -5,7 +5,7 @@ import pandas as pd
 import cv2
 
 # --- Chargement des données palettes ---
-df = pd.read_csv("data_abstract2.csv")
+df = pd.read_csv("data_abstract_final.csv")
 df = df * 255  # Passage à l'échelle 0-255
 n_palettes = len(df)
 palettes = df.values.reshape((n_palettes, 4, 3))  # [n, 4, 3] en LAB
@@ -62,7 +62,7 @@ def texte_contraste(rgb):
 
 def affichage(rgb):
     lab = cv2.cvtColor(np.array([[rgb]], dtype=np.uint8), cv2.COLOR_RGB2LAB)[0][0]
-    R = 15  # rayon tolérance
+    R = 50  # rayon tolérance
     
     liste_pred = find_palettes_from_color(lab, R, 6)
     
