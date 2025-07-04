@@ -41,6 +41,36 @@ Le projet nécessite les bibliothèques Python suivantes :
 
 ---
 
+## Générer un fichier CSV de palettes à partir d’un dossier d’images
+
+Pour générer un fichier `.csv` contenant des palettes de couleurs à partir d’un dossier d’images, il faut enchaîner les **trois étapes suivantes** :
+
+### 1. Compresser les images en 100x100 pixels
+
+Utilisez le script `compression.py` -> pour cela il faut remplir : 
+
+```python
+7 dossier_where_images_dir = ...
+8 new_dataset_name = ...
+
+### 2. Convertir les images compressées en espace LAB
+
+Utilisez le script `rgb_2_lab.py`-> pour cela il faut remplir :
+
+```python
+4 dataset_dir = ...
+5 dataset_lab_dir = ...
+
+### 3. Extraire les palettes et les enregistrer dans un fichier CSV
+
+Utilisez le script `rgb_2_lab.py`-> pour cela il faut appeler :
+
+```python
+6 dir_dossier = "data/abstract_lab"
+7 dir_nouveau_csv = "data/data_abstract_final.csv"
+
+---
+
 ## Deux modes de génération
 
 ### 1. IA par réseau de neurones
