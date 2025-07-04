@@ -60,7 +60,7 @@ Le projet nécessite les bibliothèques Python suivantes :
 
 ---
 
-## Principe de la génération de Palettes de Couleurs Représentatives à partir d’Images
+## Principe de la génération de palettes à partir d’images
 
 Le script clusters.py script extrait automatiquement des **palettes de 4 couleurs distinctes** à partir d’images existantes, afin de constituer un dataset de palettes harmonieuses.
 
