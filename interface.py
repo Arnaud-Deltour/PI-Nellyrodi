@@ -6,7 +6,7 @@ import colorsys
 import pandas as pd
 import cv2
 
-color_w = 600
+color_w = 700
 
 # Mapping des styles à leurs fichiers modèles
 model_paths = {
@@ -27,7 +27,7 @@ style_selectionne = tk.StringVar(value="")
 # Polices et couleurs
 font_title = ("Bahnschrift", 25)
 font_label = ("Helvetica Light", 12)
-font_small = ("Bahnschrift Light", 9)
+font_small = ("Bahnschrift Light", 7)
 couleur_fond = "#ffffff"
 couleur_fond_cadre = "#d9d9d9"
 couleur_texte = "black"
