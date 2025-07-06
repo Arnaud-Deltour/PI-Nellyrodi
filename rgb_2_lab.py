@@ -1,16 +1,20 @@
 import cv2
 import os
 
-#dataset_dir = 'abstract_compressed'
-#dataset_hsv_dir = 'abstract_lab'
-dataset_dir = 'impressionist_compressed'
-dataset_hsv_dir = 'impressionist_lab'
+# dataset_dir = 'abstract_compressed'
+# dataset_hsv_dir = 'abstract_lab'
+dataset_dir = "data/impressionist_compressed"
+dataset_hsv_dir = "data/impressionist_lab"
 
 # Créer dossier de sortie s'il n'existe pas
 os.makedirs(dataset_hsv_dir, exist_ok=True)
 
 # Liste des images dans le dossier
-image_list = [os.path.join(dataset_dir, file) for file in os.listdir(dataset_dir) if file.lower().endswith('.png')]
+image_list = [
+    os.path.join(dataset_dir, file)
+    for file in os.listdir(dataset_dir)
+    if file.lower().endswith(".png")
+]
 
 i = 0
 for image_path in image_list:

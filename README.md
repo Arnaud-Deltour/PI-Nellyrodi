@@ -13,7 +13,34 @@ Permettre aux utilisateurs de créer ou explorer des palettes de couleurs inspir
 
 ---
 
-## Deux modes de génération
+## Dépendances
+
+Le projet nécessite les bibliothèques Python suivantes :
+
+- `tkinter` 
+- `matplotlib` 
+- `pandas`  
+- `numpy`  
+- `tensorflow.keras`  
+- `dataset`
+- `opencv-python`
+- `colorsys`
+- `cv2`  
+
+---
+
+## Faire fonctionner l'interface 
+
+1. **Assurez-vous que toutes les dépendances sont installées** (voir section [Dépendances](#-dépendances)).
+
+2. **Lancez le script principal :**
+
+   ```bash
+   python interface_combined.py
+   ```
+---
+
+## Deux modes de génération de palettes
 
 ### 1. IA par réseau de neurones
 
@@ -33,7 +60,7 @@ Permettre aux utilisateurs de créer ou explorer des palettes de couleurs inspir
 
 ---
 
-## Génération de Palettes de Couleurs Représentatives à partir d’Images - principe général
+## Principe de la génération de palettes à partir d’images
 
 Le script clusters.py script extrait automatiquement des **palettes de 4 couleurs distinctes** à partir d’images existantes, afin de constituer un dataset de palettes harmonieuses.
 
@@ -63,3 +90,37 @@ Le script clusters.py script extrait automatiquement des **palettes de 4 couleur
 
 - Les 4 couleurs sélectionnées sont enregistrées, avec leur fréquence respective, dans un fichier `.csv`.
 - Ce dataset sert ensuite pour entraîner des modèles ou alimenter des interfaces graphiques.
+
+---
+
+## Générer un fichier CSV de palettes à partir d’un dossier d’images
+
+Pour générer un fichier `.csv` contenant des palettes de couleurs à partir d’un dossier d’images, il faut enchaîner les **trois étapes suivantes** :
+
+### 1. Compresser les images en 100x100 pixels
+
+Utilisez le script `compression.py` -> pour cela il faut remplir : 
+
+   ```python
+   7 dossier_where_images_dir = ...
+   8 new_dataset_name = ...
+   ```
+
+### 2. Convertir les images compressées en espace LAB
+
+Utilisez le script `rgb_2_lab.py`-> pour cela il faut remplir :
+
+   ```python
+   4 dataset_dir = ...
+   5 dataset_lab_dir = ...
+   ```
+
+### 3. Extraire les palettes et les enregistrer dans un fichier CSV
+
+Utilisez le script `rgb_2_lab.py`-> pour cela il faut appeler :
+
+   ```python
+   6 dir_dossier = ...
+   7 dir_nouveau_csv = ...
+   ```
+

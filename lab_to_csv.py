@@ -10,11 +10,11 @@ def lab_to_csv(nom_dossier, nom_nouveau_csv):
         nouvelle_ligne = []
 
         for i in dico :
-            l = dico[i][0][0]/255
-            a = dico[i][0][1]/255
-            b = dico[i][0][2]/255
+            h_norme = dico[i][0][0]/255
+            s_norme = dico[i][0][1]/255
+            v_norme = dico[i][0][2]/255
 
-            nouvelle_ligne += [l, a, b]
+            nouvelle_ligne += [h_norme, s_norme, v_norme]
 
         with open(nom_csv, mode='a', newline='') as fichier_csv:
             writer = csv.writer(fichier_csv)
@@ -31,7 +31,7 @@ def lab_to_csv(nom_dossier, nom_nouveau_csv):
 
     for image in image_list :
         # Reshape the image to a 2D array of pixels
-        dico = KMeans(n_clusters=4, demo=True, print_clusters=False).fit(image.reshape(-1, 3))
+        dico = KMeans(n_clusters=4, demo=False, print_clusters=False).fit(image.reshape(-1, 3))
         add_to_csv(nom_nouveau_csv,dico)
 
-lab_to_csv("abstract_lab", "data_abstract2.csv")
+lab_to_csv("data/abstract_lab", "data/data_abstract_final.csv")
