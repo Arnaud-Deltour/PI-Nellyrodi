@@ -27,6 +27,7 @@ Le projet nécessite les bibliothèques Python suivantes :
 - `colorsys`
 - `cv2`  
 
+Dernier commit stable : dccbfd6a677391be73580384f9678b151e41a01a
 ---
 
 ## Faire fonctionner l'interface 
@@ -99,7 +100,7 @@ Pour générer un fichier `.csv` contenant des palettes de couleurs à partir d�
 
 ### 1. Compresser les images en 100x100 pixels
 
-Utilisez le script `compression.py` -> pour cela il faut remplir : 
+Utilisez le script `compression.py` -> pour cela, compléter : 
 
    ```python
    7 dossier_where_images_dir = ...
@@ -108,7 +109,7 @@ Utilisez le script `compression.py` -> pour cela il faut remplir :
 
 ### 2. Convertir les images compressées en espace LAB
 
-Utilisez le script `rgb_2_lab.py`-> pour cela il faut remplir :
+Utilisez le script `rgb_2_lab.py`-> pour cela, il faut encore compléter :
 
    ```python
    4 dataset_dir = ...
@@ -117,7 +118,7 @@ Utilisez le script `rgb_2_lab.py`-> pour cela il faut remplir :
 
 ### 3. Extraire les palettes et les enregistrer dans un fichier CSV
 
-Utilisez le script `rgb_2_lab.py`-> pour cela il faut appeler :
+Utilisez le script `rgb_2_lab.py`-> pour cela, remplir :
 
    ```python
    6 dir_dossier = ...
